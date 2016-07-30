@@ -13,6 +13,7 @@ class Node(object):
         self.layer = layer
         self.group = None
         self.topologicalorder = None
+
     def __str__(self):
         return self.id
 
@@ -50,7 +51,7 @@ class Graph(object):
         self.nodesnumber = len(nodeslist)
         return nodeslist
 
-    def nodes(self):
+    def nodeslist(self):
         return self.get_nodes()
 
     def add_node(self,node):
@@ -63,13 +64,13 @@ class Graph(object):
         self.edgesnumber +=1
         self.sourcenodes[self.edgesnumber] = sourcenode
         self.destnodes[self.edgesnumber] = destnode
-        if sourcenode in self.nodes():
+        if sourcenode in self.nodeslist():
             self.graph_dict[sourcenode].append(destnode)
         else: self.graph_dict[sourcenode] = [destnode]
 
     def getsource_dest_nodes(self):
         dict = self.graph_dict
-        nodes = self.nodes()
+        nodes = self.nodeslist()
         self.nodesnumber = len(nodes)
         i = 0
         for node in nodes:
