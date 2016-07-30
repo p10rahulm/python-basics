@@ -44,6 +44,7 @@ def dfs_DAG(mygraph,source,leader,leaderlist,ordering,finishingtime,passnumber):
     for secondnode in iterlist:
         print("finishingtime,leader,leaderlist,secondnode\n",finishingtime,leader,leaderlist,secondnode)
         if mygraph.nodes[secondnode].explored != True:
+            print("i'm inside if for second node")
             (mygraph,ordering,finishingtime,leader,leaderlist) = dfs_DAG(mygraph,secondnode,leader,leaderlist,ordering,finishingtime,passnumber)
     print("returned dag. Node no:",finishingtime, "counter = ",counter-1)
     counter -= 1
