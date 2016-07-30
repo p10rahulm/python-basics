@@ -1,7 +1,7 @@
 from random import randint
 import time
 import numpy as np
-
+from collections import defaultdict
 class Node(object):
     def __init__(self,id = None,value = None,explored = False,prev =None, next = None,layer = None):
         self.id = id
@@ -21,20 +21,19 @@ class Graph(object):
     def __init__(self,graph_dict = None):
         if graph_dict == None:            graph_dict = {}
         self.graph_dict = graph_dict
-        self.sourcenodes = np.zeros(len(list(self.graph_dict.keys()))**2,dtype = np.int) # can be other type as per preference
-        self.destnodes = np.zeros(len(list(self.graph_dict.keys()))**2,dtype = np.int)
+        self.sourcenodes= np.zeros(1)
+        self.destnodes = np.zeros(1)
         self.edgesnumber = 0
         self.nodesnumber = 0
         self.nodes = {}
         #self.getsource_dest_nodes()
         self.createnodes()
+        self.reversedgraph = defaultdict(list)
 
     def createnodes(self):
         nodeholders = self.get_nodes()
         for node in (nodeholders):
             self.nodes[node] = Node(node)
-
-
 
     def get_edges(self):
         s = []
@@ -68,8 +67,11 @@ class Graph(object):
             self.graph_dict[sourcenode].append(destnode)
         else: self.graph_dict[sourcenode] = [destnode]
 
-    def getsource_dest_nodes(self):
+    def getsource_dest_nodes(self,no_of_edges=None):
         dict = self.graph_dict
+        if not no_of_edges: no_of_edges = len(list(self.graph_dict.keys()))**2
+        self.sourcenodes = np.zeros(no_of_edges,dtype = np.int) # can be other type as per preference
+        self.destnodes = np.zeros(no_of_edges,dtype = np.int)
         nodes = self.nodeslist()
         self.nodesnumber = len(nodes)
         i = 0
@@ -105,6 +107,11 @@ class Graph(object):
             p = randint(0,self.edgesnumber)
             if self.sourcenodes[p] !=0:
                 return (self.sourcenodes[p],self.destnodes[p])
+
+    def reverse_graph(self):
+        for node in self.graph_dict:
+            for secondnode in self.graph_dict[node]:
+                self.reversedgraph[secondnode].append(node)
 
     def __str__(self):
         res = "vertices: "
