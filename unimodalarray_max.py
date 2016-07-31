@@ -22,5 +22,5 @@ def unimodalmax(listA):
     if L[-1] < R[0]:
         return unimodalmax(R)
     else: return unimodalmax(L)
-
-print(unimodalmax([1,2,3,4,3,2,1]))
+if __name__ == "__main__":
+    print(unimodalmax([1,2,3,4,3,2,1]))

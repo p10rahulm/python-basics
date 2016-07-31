@@ -123,38 +123,38 @@ def column(matrix, i):
 
 
 
-#Do some checks
-'''
-A = [[1,2,3,4], [5,6,7,8],[9,10,11,12],[13,14,15,16]]
-B = [[111,112,113,114], [115,116,117,118],[119,1110,1111,1112],[1113,1114,1115,1116]]
-print(mmult(A,B))
+if __name__ == "__main__":
+    #Do some checks
+    A = [[1,2,3,4], [5,6,7,8],[9,10,11,12],[13,14,15,16]]
+    B = [[111,112,113,114], [115,116,117,118],[119,1110,1111,1112],[1113,1114,1115,1116]]
+    print(mmult(A,B))
 
-A = [[1,2,3],[4,5,6],[7,8,9]]
-B = [[10,11,12],[13,14,15],[16,17,18]]
-print(mmult(A,B))
-
-
-'''
+    A = [[1,2,3],[4,5,6],[7,8,9]]
+    B = [[10,11,12],[13,14,15],[16,17,18]]
+    print(mmult(A,B))
 
 
 
-'''
-A = [[1]]
-B = [[3]]
-print("A = " , A," B = ",B," addition leads to ",addm(A,B))
 
-A = [[2,4,1], [7,0,2]]
-B = [[3,1,1], [-1,8,5]]
-print("A = " , A," B = ",B," addition leads to ",addm(A,B))
-A = [[2,4,4], [7,0,3]]
-B = [[3,1,1], [-1,8,5]]
-print("A = " , A," B = ",B," addition leads to ",addm(A,B))
 
-a = [[2,4,6,7,5], [7,0,8,3,5], [6,3,2,1,5],[1,2,3,4,5]]
-k = int(len(a)/2)
-print("A = " , a,"\nk = ",k, "\nSubset from row range = k to 2k and col range = k to 2k+1 = \n", subsetm(a,range(k,2*k),range(k,2*k+1)))
 
-a = [[2]]
-k = int(len(a)/2)
-print("A = " , a,"\nk = ",k, "\nSubset from row range = k to 2k and col range = k to 2k+1 = \n", subsetm(a,range(k,2*k),range(k,2*k+1)))
-'''
+
+    A = [[1]]
+    B = [[3]]
+    print("A = " , A," B = ",B," addition leads to ",addm(A,B))
+
+    A = [[2,4,1], [7,0,2]]
+    B = [[3,1,1], [-1,8,5]]
+    print("A = " , A," B = ",B," addition leads to ",addm(A,B))
+    A = [[2,4,4], [7,0,3]]
+    B = [[3,1,1], [-1,8,5]]
+    print("A = " , A," B = ",B," addition leads to ",addm(A,B))
+
+    a = [[2,4,6,7,5], [7,0,8,3,5], [6,3,2,1,5],[1,2,3,4,5]]
+    k = int(len(a)/2)
+    print("A = " , a,"\nk = ",k, "\nSubset from row range = k to 2k and col range = k to 2k+1 = \n", subsetm(a,range(k,2*k),range(k,2*k+1)))
+
+    a = [[2]]
+    k = int(len(a)/2)
+    print("A = " , a,"\nk = ",k, "\nSubset from row range = k to 2k and col range = k to 2k+1 = \n", subsetm(a,range(k,2*k),range(k,2*k+1)))
+

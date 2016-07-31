@@ -42,4 +42,5 @@ def back2(res,size):
         p[int((size-1) - (size/2*sqrt(3)))+i][(size - 1) - int(i/sqrt(3))] = "*"
     return p
 
-createstar(25)
+if __name__ == "__main__":
+    createstar(25)

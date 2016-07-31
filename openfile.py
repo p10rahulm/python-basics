@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+
 def openfile_returnlist(csvfilename):
     with open(csvfilename) as f:
         x = list(map(float, f))
@@ -7,7 +10,6 @@ def openfile_returnlist_as_string(csvfilename):
         x = list(map(str, f))
     return x
 
-from collections import defaultdict
 def read_adj_list_from_file(filename):
     g = open(filename,'r')
     graph = defaultdict(list)
@@ -16,7 +18,6 @@ def read_adj_list_from_file(filename):
         graph[x]=y
     return graph
 
-from collections import defaultdict
 def read_graph_edges_from_file(filename):
     g = open(filename,'r')
     graph = defaultdict(list)
@@ -30,7 +31,6 @@ def read_graph_edges_from_file(filename):
         nlines += 1
     return graph,nlines
 
-mylist = openfile_returnlist("data/CountInversionsData.txt")
 def adj_list_to_file(G,file_name):
     f = open('tst.txt', "w")
     for n in G.nodes():
@@ -38,3 +38,6 @@ def adj_list_to_file(G,file_name):
         for neighbor in G.neighbors(n):
             f.write(str(neighbor) + ' ')
         f.write('\n')
+
+if __name__ == "__main__":
+    mylist = openfile_returnlist("data/CountInversionsData.txt")

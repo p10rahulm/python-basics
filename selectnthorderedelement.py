@@ -53,16 +53,17 @@ def swapmedianwithstart(listA,indexstart,indexend):
         swap(listA,indexstart,indexend)
     return
 
-# Tests-----------
-A = [3,2,1,4,1,1]
-bool = False
-for i in range(10000):
-    if RSelect(A,len(A),1) != 1: bool = True
-    if RSelect(A,len(A),2) != 1: bool = True
-    if RSelect(A,len(A),3) != 1: bool = True
-    if RSelect(A,len(A),4) != 2: bool = True
-    if RSelect(A,len(A),5) != 3: bool = True
-    if RSelect(A,len(A),6) != 4: bool = True
+if __name__ == "__main__":
+    # Tests-----------
+    A = [3,2,1,4,1,1]
+    bool = False
+    for i in range(10000):
+        if RSelect(A,len(A),1) != 1: bool = True
+        if RSelect(A,len(A),2) != 1: bool = True
+        if RSelect(A,len(A),3) != 1: bool = True
+        if RSelect(A,len(A),4) != 2: bool = True
+        if RSelect(A,len(A),5) != 3: bool = True
+        if RSelect(A,len(A),6) != 4: bool = True
 
-if bool == True: print("Problem")
-else: print("all ok!")
+    if bool == True: print("Problem")
+    else: print("all ok!")

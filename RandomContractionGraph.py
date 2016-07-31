@@ -159,52 +159,54 @@ def mincut_graph(graphdictionary):
         return len(graphdict[node])
     return 0
 
-# test ----------
-print("test1")
-g = { "a" : ["d"],
-  "b" : ["c"],
-  "c" : ["b", "c", "d", "e"],
-  "d" : ["a", "c"],
-  "e" : ["c"],
-  "f" : []
-}
-noedge = True
-for i in range(10):
-    if mincut_graph(g)!=0: noedge = False
-#    print("edges = ",mincut_graph(g))
-print(noedge)
 
-#Test2
-print("test2")
-minsofar =0
-setsofar = False
-for i in range(10):
-    g = { "a" : ["b","c","d"],
-      "b" : ["a","d","c"],
-      "c" : ["b", "a", "d", "e","f"],
-      "d" : ["b", "a", "d", "e","f"],
-      "e" : ["c","d"],
-      "f" : ["c","d"]
+if __name__ == "__main__":
+    # test ----------
+    print("test1")
+    g = { "a" : ["d"],
+      "b" : ["c"],
+      "c" : ["b", "c", "d", "e"],
+      "d" : ["a", "c"],
+      "e" : ["c"],
+      "f" : []
     }
-    minthistime  = mincut_graph(g)
-    if minsofar > minthistime or setsofar == False:
-        setsofar = True
-        minsofar = minthistime
-print("mincut = ",minsofar)
+    noedge = True
+    for i in range(10):
+        if mincut_graph(g)!=0: noedge = False
+    #    print("edges = ",mincut_graph(g))
+    print(noedge)
+
+    #Test2
+    print("test2")
+    minsofar =0
+    setsofar = False
+    for i in range(10):
+        g = { "a" : ["b","c","d"],
+          "b" : ["a","d","c"],
+          "c" : ["b", "a", "d", "e","f"],
+          "d" : ["b", "a", "d", "e","f"],
+          "e" : ["c","d"],
+          "f" : ["c","d"]
+        }
+        minthistime  = mincut_graph(g)
+        if minsofar > minthistime or setsofar == False:
+            setsofar = True
+            minsofar = minthistime
+    print("mincut = ",minsofar)
 
 
-#test3
-print("test3")
-from openfile import read_adj_list_from_file
-graph = read_adj_list_from_file("data/karger_cut.txt")
-#print("mincut = ",mincut_graph(graph))
-setsofar = False
-minsofar = 100
-for i in range(10000):
+    #test3
+    print("test3")
+    from openfile import read_adj_list_from_file
     graph = read_adj_list_from_file("data/karger_cut.txt")
-    g = graph
-    minthistime  = mincut_graph(g)
-    if minsofar > minthistime or setsofar == False:
-        setsofar = True
-        minsofar = minthistime
-    print("loop number",i,"mincut = ",minsofar)
+    #print("mincut = ",mincut_graph(graph))
+    setsofar = False
+    minsofar = 100
+    for i in range(10000):
+        graph = read_adj_list_from_file("data/karger_cut.txt")
+        g = graph
+        minthistime  = mincut_graph(g)
+        if minsofar > minthistime or setsofar == False:
+            setsofar = True
+            minsofar = minthistime
+        print("loop number",i,"mincut = ",minsofar)

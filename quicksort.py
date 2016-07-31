@@ -50,63 +50,63 @@ def partition(listA,indexstart,indexend):
 
     swap(listA,indexstart,indexLeft-1)
     return indexLeft-1
-
-
-from openfile import openfile_returnlist
-filename = "data/countqsortdata.txt"
-data = openfile_returnlist(filename)
-quickSort(data)
-print(counter)
-
-
-
 '''
-listA = [54,26,93,17,77,31,44,55,20]
-quickSort(listA)
-print(listA)
-
-listA = [1,2,3,1,6,2,100,1]
-quickSort(listA)
-print(listA)
-
-import time
-start_time = time.time()
-listA = list(range(1000000,0,-1))
-quickSort(listA)
-print(listA[0:100])
-print("--- %s seconds ---" % (time.time() - start_time))
-
-from MergeSort import mergesorts
-start_time = time.time()
-listA = list(range(1000000,0,-1))
-print(mergesorts(listA)[0:100])
-print("--- %s seconds ---" % (time.time() - start_time))
-
-
-
 # Below uses while loop instead of for loop in partition
-def partition(listA,indexstart,indexend):
-    randomtofirst(listA,indexstart,indexend)
-    pivotvalue = listA[indexstart]
-    indexLeft = indexstart+1
-    indexRight = indexend
-    done = False
-    while not done:
-        while indexLeft <= indexRight and listA[indexLeft] <= pivotvalue:
-            indexLeft = indexLeft + 1
-        while listA[indexRight] >= pivotvalue and indexRight >= indexLeft:
-            indexRight = indexRight -1
-        if indexRight < indexLeft:
-            done = True
-        else:
-            temp = listA[indexLeft]
-            listA[indexLeft] = listA[indexRight]
-            listA[indexRight] = temp
+    def partition(listA,indexstart,indexend):
+        randomtofirst(listA,indexstart,indexend)
+        pivotvalue = listA[indexstart]
+        indexLeft = indexstart+1
+        indexRight = indexend
+        done = False
+        while not done:
+            while indexLeft <= indexRight and listA[indexLeft] <= pivotvalue:
+                indexLeft = indexLeft + 1
+            while listA[indexRight] >= pivotvalue and indexRight >= indexLeft:
+                indexRight = indexRight -1
+            if indexRight < indexLeft:
+                done = True
+            else:
+                temp = listA[indexLeft]
+                listA[indexLeft] = listA[indexRight]
+                listA[indexRight] = temp
 
-    temp = listA[indexstart]
-    listA[indexstart] = listA[indexRight]
-    listA[indexRight] = temp
+        temp = listA[indexstart]
+        listA[indexstart] = listA[indexRight]
+        listA[indexRight] = temp
 
 
-    return indexRight
+        return indexRight
 '''
+
+if __name__ == "__main__":
+    #test 1
+    from openfile import openfile_returnlist
+    filename = "data/countqsortdata.txt"
+    data = openfile_returnlist(filename)
+    quickSort(data)
+    print(counter)
+
+
+
+
+    listA = [54,26,93,17,77,31,44,55,20]
+    quickSort(listA)
+    print(listA)
+
+    listA = [1,2,3,1,6,2,100,1]
+    quickSort(listA)
+    print(listA)
+
+    import time
+    start_time = time.time()
+    listA = list(range(1000000,0,-1))
+    quickSort(listA)
+    print(listA[0:100])
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+    from MergeSort import mergesorts
+    start_time = time.time()
+    listA = list(range(1000000,0,-1))
+    print(mergesorts(listA)[0:100])
+    print("--- %s seconds ---" % (time.time() - start_time))
+
