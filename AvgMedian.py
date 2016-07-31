@@ -39,30 +39,29 @@ def average(listA):
     return sum/len(listA)
 
 
-'''
-A = [1,2,3,4,5,6,7,8,9,10]
-n=int(len(A)/2)
-print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
+if __name__ == "__main__":
+    A = [1,2,3,4,5,6,7,8,9,10]
+    n=int(len(A)/2)
+    print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
 
-A = [1,2,3,4,5,6,7,8,9,10]
-n=1
-print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
+    A = [1,2,3,4,5,6,7,8,9,10]
+    n=1
+    print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
 
-A = [1,2,3,4,5,6,7,8,9,10]
-n=2
-print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
+    A = [1,2,3,4,5,6,7,8,9,10]
+    n=2
+    print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
 
-A = [1,2,3,4,5,6,7,8,9,10]
-n=3
-print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
-
-
-A = [1,2,3,4,5,6,7,8,9,10]
-n=4
-print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
+    A = [1,2,3,4,5,6,7,8,9,10]
+    n=3
+    print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
 
 
-A = [1,2,3,4,5,6,7,8,9,10]
-n=5
-print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
-'''
+    A = [1,2,3,4,5,6,7,8,9,10]
+    n=4
+    print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))
+
+
+    A = [1,2,3,4,5,6,7,8,9,10]
+    n=5
+    print("A = \n", A,"\nn = ",n,"\nnth_element_in_list =",nth_element_in_list(A,n))

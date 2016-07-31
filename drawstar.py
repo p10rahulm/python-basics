@@ -11,6 +11,6 @@ def draw_star(size, color):
         turtle.right(60 - angle)
 
     return
-
-draw_star(100, "purple")
+if __name__ == "__main__":
+    draw_star(100, "purple")
 

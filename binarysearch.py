@@ -27,18 +27,19 @@ def binarysearch_return_index(sortedarray,value,indexstart):
 def binarysearch(sortedarray,value):
     return binarysearch_return_index(sortedarray,value,0)
 
-A = []
-value = 2
-print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
-A = [1,2,3,4,5]
-value = 1.5
-print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
-A = [1,2,3,4,5]
-value = 7
-print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
-A = [1,2,3,4,5]
-value = 1
-print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
-A = [1,1,1,1,1]
-value = 1
-print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
+if __name__ == "__main__":
+    A = []
+    value = 2
+    print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
+    A = [1,2,3,4,5]
+    value = 1.5
+    print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
+    A = [1,2,3,4,5]
+    value = 7
+    print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
+    A = [1,2,3,4,5]
+    value = 1
+    print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))
+    A = [1,1,1,1,1]
+    value = 1
+    print("A = ",A,"value = ",value,"found value in array? ",binarysearchfound(A,value),"index = ", binarysearch(A,value))

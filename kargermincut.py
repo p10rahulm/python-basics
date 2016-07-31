@@ -37,5 +37,5 @@ def operation(n):
         #print("loop number = ",i,"mincut so far = ",count)
     return count
 
-
-print(operation(100000))
+if __name__ == "__main__":
+    print(operation(100000))

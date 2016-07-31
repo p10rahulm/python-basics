@@ -17,26 +17,27 @@ def find_ai_equals_i(listA,indexstart):
         LT = find_ai_equals_i(L,indexstart)
         return RT or LT
 
-#Do some checks
-A = [-5,-1,3,11]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [-5,-1,1,4]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [-5,-1,3,15,16]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [-5,2,5,15,16]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [-5,-1,1,11]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-'''
-A = [-5,-1,1,7]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-'''
-A = [-5,-1,0,15,16]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [-5,1,5,15,16]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [0,0,0,0]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
-A = [1,1,1,1]
-print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+if __name__ == "__main__":
+    #Do some checks
+    A = [-5,-1,3,11]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [-5,-1,1,4]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [-5,-1,3,15,16]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [-5,2,5,15,16]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [-5,-1,1,11]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    '''
+    A = [-5,-1,1,7]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    '''
+    A = [-5,-1,0,15,16]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [-5,1,5,15,16]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [0,0,0,0]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))
+    A = [1,1,1,1]
+    print("A = ",A,"Does Ai have A[i] = i ? ", find_ai_equals_i(A,0))

@@ -90,62 +90,63 @@ def runkarger(graph):
     return len(mygraph.sourcenodes[mygraph.sourcenodes!=0])/2
 
 
-#test 1
-testtime = time.time()
-g = { 1 : [4],
-  2 : [3],
-  3 : [2,3,4,5],
-  4 : [1,3],
-  5 : [3],
-  6 : []
-}
-minsofar =100
-for i in range(10000):
-    p = runkarger(g)
-    if p<minsofar: minsofar = p
-print("mincut is ",minsofar )
-print("done test 1 in ",time.time() - testtime, "seconds")
-
-#test2
-#Test2
-print("test2")
-testtime = time.time()
-minsofar =100
-for i in range(10000):
-    g = { 1 : [2,3,4],
-      2 : [1,3,4],
-      3 : [1,2,4,5,6],
-      4 : [1,2,3, 5,6],
-      5 : [3,4],
-      6 : [3,4]
+if __name__ == "__main__":
+    #test 1
+    testtime = time.time()
+    g = { 1 : [4],
+      2 : [3],
+      3 : [2,3,4,5],
+      4 : [1,3],
+      5 : [3],
+      6 : []
     }
-    minthistime  = runkarger(g)
-    if minsofar > minthistime:
-        minsofar = minthistime
-print("mincut = ",minsofar)
-print("done test 2 in ",time.time() - testtime, "seconds")
+    minsofar =100
+    for i in range(10000):
+        p = runkarger(g)
+        if p<minsofar: minsofar = p
+    print("mincut is ",minsofar )
+    print("done test 1 in ",time.time() - testtime, "seconds")
+
+    #test2
+    #Test2
+    print("test2")
+    testtime = time.time()
+    minsofar =100
+    for i in range(10000):
+        g = { 1 : [2,3,4],
+          2 : [1,3,4],
+          3 : [1,2,4,5,6],
+          4 : [1,2,3, 5,6],
+          5 : [3,4],
+          6 : [3,4]
+        }
+        minthistime  = runkarger(g)
+        if minsofar > minthistime:
+            minsofar = minthistime
+    print("mincut = ",minsofar)
+    print("done test 2 in ",time.time() - testtime, "seconds")
 
 
-#test3
-print("test3")
-testtime = time.time()
-from openfile import read_adj_list_from_file
+    #test3
+    print("test3")
+    testtime = time.time()
+    from openfile import read_adj_list_from_file
 
-minsofar = 100
-totaltries = 10000
-readgraph = read_adj_list_from_file("data/karger_cut.txt")
+    minsofar = 100
+    totaltries = 10000
+    readgraph = read_adj_list_from_file("data/karger_cut.txt")
 
-for i in range(totaltries):
-    minthistime  = runkarger(readgraph)
-    if minsofar > minthistime :
-        minsofar = minthistime
-print("mincut = ",minsofar)
-print("done test 3 in ",time.time() - testtime, "seconds")
+    for i in range(totaltries):
+        minthistime  = runkarger(readgraph)
+        if minsofar > minthistime :
+            minsofar = minthistime
+    print("mincut = ",minsofar)
+    print("done test 3 in ",time.time() - testtime, "seconds")
 
-print("total time taken for getting random edges : ",randedgetime)
-print("total time taken for collapse edges: ",colledgetime)
-print("total time taken for remove self loops: ",removeselfloopstime)
-print("total time taken for setting equality of source dest nodes: ",setgtime)
-print("total time taken for changing total edges in removal: ",numberofedgestime)
-print("total time taken for setting nans in source dest nodes: ",setnansinsrcdestnodestime)
-print("total time taken for creating sets: ",settingtime)
+    print("total time taken for getting random edges : ",randedgetime)
+    print("total time taken for collapse edges: ",colledgetime)
+    print("total time taken for remove self loops: ",removeselfloopstime)
+    print("total time taken for setting equality of source dest nodes: ",setgtime)
+    print("total time taken for changing total edges in removal: ",numberofedgestime)
+    print("total time taken for setting nans in source dest nodes: ",setnansinsrcdestnodestime)
+    print("total time taken for creating sets: ",settingtime)

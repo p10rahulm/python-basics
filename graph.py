@@ -129,3 +129,5 @@ class Graph(object):
         for edge in self.get_edges():
             res += str(edge) + " "
         return res
+
+if __name__ == "__main__":

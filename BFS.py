@@ -47,46 +47,46 @@ def find_connected_components(graph):
         result[graph_object.nodes[node].group].append(graph_object.nodes[node].id)
     return result
 
+if __name__ == "__main__":
+    #test 1
+    print("test 1")
+    g = { 1 : [2,3,4],
+          2 : [1,3,4],
+          3 : [1,2,4,5,6],
+          4 : [1,2,3, 5,6],
+          5 : [3,4],
+          6 : [3,4]
+        }
+    source = 1
+    check = True
+    for i in range(10000):
+        check = check_all_vertices_explored(g,source)
+    print("Time Taken = ",time.time()-timestart, "all explored = ",check)
 
-#test 1
-print("test 1")
-g = { 1 : [2,3,4],
-      2 : [1,3,4],
-      3 : [1,2,4,5,6],
-      4 : [1,2,3, 5,6],
-      5 : [3,4],
-      6 : [3,4]
-    }
-source = 1
-check = True
-for i in range(10000):
-    check = check_all_vertices_explored(g,source)
-print("Time Taken = ",time.time()-timestart, "all explored = ",check)
 
+    #test 2
+    print("test 2")
+    source =1
+    dest = 6
+    for i in range(10000):
+        distance = dist(source,dest,g)
+    print("Time Taken = ",time.time()-timestart, "dist = ",distance)
 
-#test 2
-print("test 2")
-source =1
-dest = 6
-for i in range(10000):
-    distance = dist(source,dest,g)
-print("Time Taken = ",time.time()-timestart, "dist = ",distance)
+    #test3
+    print("test 3")
+    timestart = time.time()
 
-#test3
-print("test 3")
-timestart = time.time()
-
-g = { 1 : [3,5],
-      2 : [4],
-      3 : [1,5],
-      4 : [2],
-      5 : [1,3,7,9],
-      6 : [8,10],
-      7 : [5],
-      8 : [6,10],
-      9 : [5],
-      10: [6,8]
-    }
-for i in range(10000):
-    components = find_connected_components(g)
-print("Time Taken = ",time.time()-timestart, "components = ",components)
+    g = { 1 : [3,5],
+          2 : [4],
+          3 : [1,5],
+          4 : [2],
+          5 : [1,3,7,9],
+          6 : [8,10],
+          7 : [5],
+          8 : [6,10],
+          9 : [5],
+          10: [6,8]
+        }
+    for i in range(10000):
+        components = find_connected_components(g)
+    print("Time Taken = ",time.time()-timestart, "components = ",components)

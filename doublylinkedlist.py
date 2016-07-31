@@ -51,17 +51,17 @@ class DoubleList(object):
             current_node = current_node.next
         print("*"*50)
 
+if __name__ == "__main__":
+    d = DoubleList()
 
-d = DoubleList()
+    d.append(5)
+    d.append(6)
+    d.append(50)
+    d.append(30)
 
-d.append(5)
-d.append(6)
-d.append(50)
-d.append(30)
+    d.show()
 
-d.show()
+    d.remove(50)
+    d.remove(5)
 
-d.remove(50)
-d.remove(5)
-
-d.show()
+    d.show()

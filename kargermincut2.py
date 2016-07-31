@@ -214,70 +214,74 @@ def mincut_graph(graphdictionary):
     mygraph = getmincut_randomcontraction(graphdictionary)
     return len(mygraph.graph_dict[mygraph.vertices()[0]])
 
-# test ----------
-print("test1")
-g = { "a" : ["d"],
-  "b" : ["c"],
-  "c" : ["b", "c", "d", "e"],
-  "d" : ["a", "c"],
-  "e" : ["c"],
-  "f" : []
-}
-noedge = True
-for i in range(10):
-    if mincut_graph(g)!=0: noedge = False
-#    print("edges = ",mincut_graph(g))
-print(noedge)
 
-#Test2
-print("test2")
-minsofar =0
-setsofar = False
-for i in range(100000):
-    g = { "a" : ["b","c","d"],
-      "b" : ["a","d","c"],
-      "c" : ["b", "a", "d", "e","f"],
-      "d" : ["b", "a", "c", "e","f"],
-      "e" : ["c","d"],
-      "f" : ["c","d"]
+
+if __name__ == "__main__":
+
+    # test ----------
+    print("test1")
+    g = { "a" : ["d"],
+      "b" : ["c"],
+      "c" : ["b", "c", "d", "e"],
+      "d" : ["a", "c"],
+      "e" : ["c"],
+      "f" : []
     }
-    minthistime  = mincut_graph(g)
-    if minsofar > minthistime or setsofar == False:
-        setsofar = True
-        minsofar = minthistime
-print("mincut = ",minsofar)
+    noedge = True
+    for i in range(10):
+        if mincut_graph(g)!=0: noedge = False
+    #    print("edges = ",mincut_graph(g))
+    print(noedge)
+
+    #Test2
+    print("test2")
+    minsofar =0
+    setsofar = False
+    for i in range(100000):
+        g = { "a" : ["b","c","d"],
+          "b" : ["a","d","c"],
+          "c" : ["b", "a", "d", "e","f"],
+          "d" : ["b", "a", "c", "e","f"],
+          "e" : ["c","d"],
+          "f" : ["c","d"]
+        }
+        minthistime  = mincut_graph(g)
+        if minsofar > minthistime or setsofar == False:
+            setsofar = True
+            minsofar = minthistime
+    print("mincut = ",minsofar)
 
 
-#test3
-print("test3")
-from openfile import read_adj_list_from_file
-graph = read_adj_list_from_file("data/karger_cut.txt")
-#print("mincut = ",mincut_graph(graph))
-minsofar = 100
-totaltries = 100
-for i in range(totaltries):
-    #timestart = time.time()
+    #test3
+    print("test3")
+    from openfile import read_adj_list_from_file
     graph = read_adj_list_from_file("data/karger_cut.txt")
-    g = graph
-    minthistime  = mincut_graph(g)
-    if minsofar > minthistime :
-        setsofar = True
-        minsofar = minthistime
-    #print("loop number",i,"mincut = ",minsofar)
-    #print("time taken in this loop",time.time()-timestart)
-print("mincut = ",minsofar)
-'''
-print("total time taken for getting random edges : ",randomedgetime)
-print("total time taken for collapse edges: ",collapseedgestime)
-print("total time taken for remove self loops: ",removeselfloopstime)
-print("total build time taken : ",buildtime)
-print("total time taken within build for bidirectional : ",bidirectionaltime)
-print("total edge check time taken : ",edgechecktime)
-print("total vertex split time taken : ",vertexsplitime )
-print("total mutual vertex removal time taken : ",mutualvertexremovaltime)
-print("total time taken to deep copy dictionary[vertex2] : ",dictv2copytime)
-print("total time taken to run vertex 2 loops : ",vertex2connectedstime )
-print("total time taken to run vertex 2 subpart1 : ",v2conn1stpart )
-print("total time taken to run vertex 2 subpart2 : ",v2conn2ndpart )
-print("total vertex2 deletion time taken : ",vertex2deletiontime)
-'''
+    #print("mincut = ",mincut_graph(graph))
+    minsofar = 100
+    totaltries = 100
+    for i in range(totaltries):
+        #timestart = time.time()
+        graph = read_adj_list_from_file("data/karger_cut.txt")
+        g = graph
+        minthistime  = mincut_graph(g)
+        if minsofar > minthistime :
+            setsofar = True
+            minsofar = minthistime
+        #print("loop number",i,"mincut = ",minsofar)
+        #print("time taken in this loop",time.time()-timestart)
+    print("mincut = ",minsofar)
+    '''
+    print("total time taken for getting random edges : ",randomedgetime)
+    print("total time taken for collapse edges: ",collapseedgestime)
+    print("total time taken for remove self loops: ",removeselfloopstime)
+    print("total build time taken : ",buildtime)
+    print("total time taken within build for bidirectional : ",bidirectionaltime)
+    print("total edge check time taken : ",edgechecktime)
+    print("total vertex split time taken : ",vertexsplitime )
+    print("total mutual vertex removal time taken : ",mutualvertexremovaltime)
+    print("total time taken to deep copy dictionary[vertex2] : ",dictv2copytime)
+    print("total time taken to run vertex 2 loops : ",vertex2connectedstime )
+    print("total time taken to run vertex 2 subpart1 : ",v2conn1stpart )
+    print("total time taken to run vertex 2 subpart2 : ",v2conn2ndpart )
+    print("total vertex2 deletion time taken : ",vertex2deletiontime)
+    '''

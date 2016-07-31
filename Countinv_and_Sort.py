@@ -32,28 +32,28 @@ def mergesncounts(flistA,flistB):
             j+=1
     return listk
 
-from openfile import openfile_returnlist
-filename = "data/CountInversionsData.txt"
-data = openfile_returnlist(filename)
-print("Checking the number of inversions in the file ",filename)
-print(mergesortncount([data,0])[1])
+if __name__ == "__main__":
+    from openfile import openfile_returnlist
+    filename = "data/CountInversionsData.txt"
+    data = openfile_returnlist(filename)
+    print("Checking the number of inversions in the file ",filename)
+    print(mergesortncount([data,0])[1])
 
-'''
-#some checks
-A = [[8,4,1,6,7,2,6,2,2221],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[1,2,3],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[3,2,1],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[2,1],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[2,1,3],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[3,1,3],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[3,3,3],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-A = [[3,3,3,-2,-1,0],0]
-print("A = ",A,"\nmerges = " , mergesortncount(A))
-'''
+
+    #some checks
+    A = [[8,4,1,6,7,2,6,2,2221],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[1,2,3],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[3,2,1],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[2,1],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[2,1,3],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[3,1,3],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[3,3,3],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))
+    A = [[3,3,3,-2,-1,0],0]
+    print("A = ",A,"\nmerges = " , mergesortncount(A))

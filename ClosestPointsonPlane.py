@@ -73,23 +73,21 @@ def convert_list_of_tuples_to_list_of_coords(listAll):
         ycoords.append(listAll[i][1])
     return xcoords,ycoords
 
-###Tests----------------------------
-xcoords = [0,1,0,0]
-ycoords = [-5,5,25,85]
-print("X Coordinates of points are",xcoords,"\nY Coordinates of points are",ycoords,
-      "\nshortest distances are between points and distance is: ",closest(xcoords,ycoords))
 
-A = [(0,-5),(1,5),(0,25),(0,85)]
-xcoords,ycoords = convert_list_of_tuples_to_list_of_coords(A)
-print("X Coordinates of points are",xcoords,"\nY Coordinates of points are",ycoords,
-      "\nshortest distances are between points and distance is: ",closest(xcoords,ycoords))
+if __name__ == "__main__":
+    ###Tests----------------------------
+    xcoords = [0,1,0,0]
+    ycoords = [-5,5,25,85]
+    print("X Coordinates of points are",xcoords,"\nY Coordinates of points are",ycoords,
+          "\nshortest distances are between points and distance is: ",closest(xcoords,ycoords))
 
+    A = [(0,-5),(1,5),(0,25),(0,85)]
+    xcoords,ycoords = convert_list_of_tuples_to_list_of_coords(A)
+    print("X Coordinates of points are",xcoords,"\nY Coordinates of points are",ycoords,
+          "\nshortest distances are between points and distance is: ",closest(xcoords,ycoords))
 
-
-'''
-A = [8,4,1,6,7,2,6,2,2221]
-print(mergesorts(A))
-A = [1,2,3,4,5,6,7,8,10,9]
-B = [10,9,8,7,6,5,4,3,2,1]
-print("A = \n" , A , "\nB = ",B,"\nMerged and sorted lists are\n" , mergesorttwolists(A,B))
-'''
+    A = [8,4,1,6,7,2,6,2,2221]
+    print(mergesorts(A))
+    A = [1,2,3,4,5,6,7,8,10,9]
+    B = [10,9,8,7,6,5,4,3,2,1]
+    print("A = \n" , A , "\nB = ",B,"\nMerged and sorted lists are\n" , mergesorttwolists(A,B))

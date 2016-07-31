@@ -9,5 +9,7 @@ def secondhighest(listA):
             else:
                 secbest = listA[i]
     return secbest
-A = [1,2,3,1,2,5,6,6]
-print("second highest in array A = ",A, "is ",secondhighest(A))
+
+if __name__ == "__main__":
+    A = [1,2,3,1,2,5,6,6]
+    print("second highest in array A = ",A, "is ",secondhighest(A))

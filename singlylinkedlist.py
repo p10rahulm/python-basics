@@ -40,15 +40,15 @@ class SingleList(object):
             # needed for the next iteration
             previous_node = current_node
             current_node = current_node.next
+if __name__ == "__main__":
 
+    s = SingleList()
+    s.append(31)
+    s.append(2)
+    s.append(3)
+    s.append(4)
 
-s = SingleList()
-s.append(31)
-s.append(2)
-s.append(3)
-s.append(4)
-
-s.show()
-s.remove(31)
-s.remove(3)
-s.remove(2)
+    s.show()
+    s.remove(31)
+    s.remove(3)
+    s.remove(2)
