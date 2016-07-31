@@ -1,5 +1,5 @@
-from graph import Graph
-from graph import Node
+from graphObj import Graph
+from graphObj import Node
 from collections import defaultdict
 import time
 

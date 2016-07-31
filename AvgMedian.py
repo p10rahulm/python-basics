@@ -1,4 +1,4 @@
-from MergeSort import mergesorts
+from list_mergesort import mergesorts
 
 def nth_element_in_list(listA,n):
     #print(listA,n)

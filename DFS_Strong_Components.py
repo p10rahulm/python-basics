@@ -1,5 +1,5 @@
-from graph import Graph
-from graph import Node
+from graphObj import Graph
+from graphObj import Node
 from collections import defaultdict
 import time
 from openfile import read_graph_edges_from_file
@@ -80,7 +80,6 @@ def find_strong_components_directed_graph(graph_dictionary):
 
 
 if __name__ == "__main__":
-
     #test 1
     print("test 1")
     starttime = time.time()

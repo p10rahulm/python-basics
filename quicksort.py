@@ -104,7 +104,7 @@ if __name__ == "__main__":
     print(listA[0:100])
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    from MergeSort import mergesorts
+    from list_mergesort import mergesorts
     start_time = time.time()
     listA = list(range(1000000,0,-1))
     print(mergesorts(listA)[0:100])
