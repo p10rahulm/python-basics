@@ -22,7 +22,7 @@ def read_graph_edges_from_file(filename):
     graph = defaultdict(list)
     nlines =0
     for line in g:
-        (x, y) = map(int, line.strip().split(" "))
+        (x, y) = line.strip().split() #map(int, line.strip().split(" "))
         if(x==y):
             print("loops exist, x = ",x,"; y = ", y)
         else:
