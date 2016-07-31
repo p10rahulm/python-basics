@@ -18,7 +18,7 @@ class Node(object):
         return self.id
 
 class Graph(object):
-    def __init__(self,graph_dict = None):
+    def __init__(self,graph_dict = None,requireReversed = False):
         if graph_dict == None:            graph_dict = {}
         self.graph_dict = graph_dict
         self.sourcenodes= np.zeros(1)
@@ -27,10 +27,12 @@ class Graph(object):
         self.nodesnumber = 0
         self.nodes = {}
         #self.getsource_dest_nodes()
-        self.createnodes()
         self.reversedgraph = defaultdict(list)
+        if requireReversed: self.reverse_graph()
+        self.createnodes()
 
     def createnodes(self):
+        self.nodes = {}
         nodeholders = self.get_nodes()
         for node in (nodeholders):
             self.nodes[node] = Node(node)
@@ -46,8 +48,14 @@ class Graph(object):
         return self.get_edges()
 
     def get_nodes(self):
-        nodeslist = list(self.graph_dict.keys())
-        self.nodesnumber = len(nodeslist)
+        if self.reversedgraph:
+            forwardnodeslist = list(self.graph_dict.keys())
+            reversednodeslist = list(self.reversedgraph.keys())
+            nodeslist = set(forwardnodeslist).union(reversednodeslist)
+            self.nodesnumber = len(nodeslist)
+        else:
+            nodeslist = list(self.graph_dict.keys())
+            self.nodesnumber = len(nodeslist)
         return nodeslist
 
     def nodeslist(self):
