@@ -1,3 +1,4 @@
+import time
 from collections import defaultdict
 from binHeap import minHeap
 def creategraph(edges):
@@ -46,6 +47,7 @@ def dijkstra(edges_with_distances, source, destination):
 if __name__ == "__main__":
     #test 1
     print("test 1")
+    timestart = time.time()
     edges = [
         ("A", "B", 7),
         ("A", "D", 5),
@@ -63,6 +65,9 @@ if __name__ == "__main__":
     print("=== Dijkstra ===")
     print(edges)
     print("A -> E:")
-    print(dijkstra(edges, "A", "E"))
+    for i in range(100000):
+        djiks = dijkstra(edges, "A", "E")
+    print(djiks)
+    print("time taken = ", time.time() - timestart)
     print("F -> G:")
     print(dijkstra(edges, "F", "G"))
