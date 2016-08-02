@@ -1,9 +1,7 @@
-# A priority queue is nothing but a heap data structure.
-# A priority queue is all about trade-offs. See http://en.wikipedia.org/wiki/Priority_queue
+# See http://en.wikipedia.org/wiki/Priority_queue
+# You should choose binary or fibonacci heap, based on how you plan to use it:
 #
-# You should choose one of these two, based on how you plan to use it:
-#
-# O(log(N)) insertion time and O(1) findMin+deleteMin time, or
+# O(log(N)) insertion time and O(1) findMin+deleteMin time - bin search heap, or
 # O(1) insertion time and O(log(N)) findMin+deleteMin time
 # In the latter case, you can choose to implement a priority queue with a Fibonacci heap:
 # http://en.wikipedia.org/wiki/Heap_(data_structure)#Comparison_of_theoretic_bounds_for_variants
@@ -16,6 +14,15 @@
 # storage and manipulation of four pointers per node, compared to the two or three pointers per node needed 
 # for other structures
 # We therefore code the priority queue as a binary heap and added the fibonacci heap as a separate structure
+#
+# Operation	    Binary[1]	Binomial[1]	Fibonacci[1]	Pairing[2]	Brodal[3][a]	Rank-pairing[5]	Strict Fibonacci[6]
+# find-min	    Θ(1)	    Θ(1)	    Θ(1)	        Θ(1)	    Θ(1)	        Θ(1)	        Θ(1)
+# delete-min	Θ(log n)	Θ(log n)	O(log n)[b]	    O(log n)	O(log n)	    O(log n)[b]	    O(log n)
+# insert	    Θ(log n)	Θ(1)	    Θ(1)	        Θ(1)	    Θ(1)	        Θ(1)	        Θ(1)
+# decrease-key	Θ(log n)	Θ(log n)	Θ(1)	        o(log n)	Θ(1)	        Θ(1)[b]	        Θ(1)
+# merge	        Θ(n)	    O(log n)	Θ(1)	        Θ(1)	    Θ(1)	        Θ(1)	        Θ(1)
+
+
 import time
 class PriorityQueue(object):
     def __init__(self,inputArray=None):
@@ -74,6 +81,10 @@ class PriorityQueue(object):
         while (itercounter >= 0):
             self.percDown(itercounter)
             itercounter = itercounter - 1
+
+    def empty(self):
+        if self.currentSize == 0: return True
+        else: return False
 
     def show(self):
         print(self.heapList)

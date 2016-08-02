@@ -1,6 +1,6 @@
 import time
 from collections import defaultdict
-from binHeap import minHeap
+from minHeap import minHeap
 def creategraph(edges):
     for i in range(len(edges)):
         edges[i] = edges[i][::-1]
