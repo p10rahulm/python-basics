@@ -1,4 +1,4 @@
-#
+# http://www.geeksforgeeks.org/binomial-heap-2/
 # Operation	    Binary[1]	Binomial[1]	Fibonacci[1]	Pairing[2]	Brodal[3][a]	Rank-pairing[5]	Strict Fibonacci[6]
 # find-min	    Θ(1)	    Θ(1)	    Θ(1)	        Θ(1)	    Θ(1)	        Θ(1)	        Θ(1)
 # delete-min	Θ(log n)	Θ(log n)	O(log n)[b]	    O(log n)	O(log n)	    O(log n)[b]	    O(log n)
@@ -6,6 +6,80 @@
 # decrease-key	Θ(log n)	Θ(log n)	Θ(1)	        o(log n)	Θ(1)	        Θ(1)[b]	        Θ(1)
 # merge	        Θ(n)	    O(log n)	Θ(1)	        Θ(1)	    Θ(1)	        Θ(1)	        Θ(1)
 #
+
+from math import log2
+
+
+
+class BinomialHeap(object):
+
+    class Node(object):
+        def __init__(self, val=None):
+            self.value = val
+            if val is None:  # Dummy sentinel node at head of list
+                self.rank = -1
+            else:  # Regular node
+                self.rank = 0
+                # Rank = Number of children = n. Each child then has rank n - 1
+                # as per definition of binomial tree
+            self.leftmostchild = None
+            self.rightsibling = None
+            self.parent = None
+
+        def remove_root(self):
+            assert self.next is None
+            result = None
+            node = self.down
+            while node is not None:  # Reverse the order of nodes from descending rank to ascending rank
+                next = node.next
+                node.next = result
+                result = node
+                node = next
+            return result
+
+    def __init__(self, heaplist_input=None):
+        if heaplist_input == None:
+            self.heapList = [0]
+            self.size = 0
+        else:
+            self.heapList = [0] + heaplist_input
+            self.buildHeap(self.heapList)
+            self.size = len(heaplist_input)
+
+    def __swap(self, firstindex, secondindex):
+        tmp = self.heapList[secondindex]
+        self.heapList[secondindex] = self.heapList[firstindex]
+        self.heapList[firstindex] = tmp
+
+    def buildheap(self,array):
+        self.ntrees = int(log2(self.size)) + 1
+        for i in range(self.ntrees):
+            self.treerootpointers[i] = 2**i
+        self.minval = float('inf')
+        for i in self.treerootpointers:
+            if self.heapList[i]<self.minpointer:
+                self.minpointer = i
+                self.minval = self.heapList[i]
+
+        for i in range(len(self.size)):
+            nodeslist = {}
+            nodeslist[i] = Node(self.heapList[i])
+
+
+
+
+    def percUp(self, node_index):
+        while (node_index - 1) // 2 >= 0:
+            if self.heapList[node_index] < self.heapList[(node_index - 1) // 2]:
+                self.__swap(node_index, (node_index - 1) // 2)
+            node_index = (node_index - 1) // 2
+
+    def insert(self, insertElement):
+        self.heapList.append(insertElement)
+        self.size = self.size+ 1
+        self.percUp(self.size- 1)
+
+
 # Binomial heap (Python)
 #
 # Copyright (c) 2014 Project Nayuki
@@ -176,6 +250,7 @@ class BinomialHeap(object):
                     raise AssertionError()
                 self.next.check_structure(True)
 
+
 if __name__ == "__main__":
     def test1():
         from PriorityQueue import PriorityQueue
@@ -241,5 +316,6 @@ if __name__ == "__main__":
                 raise AssertionError()
 
         print("Test passed")
+
 
     test1()

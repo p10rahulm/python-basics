@@ -46,7 +46,7 @@ class FibonacciHeap:
             if z.child is not None:
                 # attach child nodes to root list
                 children = [x for x in self.iterate(z.child)]
-                for i in xrange(0, len(children)):
+                for i in range(len(children)):
                     self.merge_with_root_list(children[i])
                     children[i].parent = None
             self.remove_from_root_list(z)
@@ -123,7 +123,7 @@ class FibonacciHeap:
     def consolidate(self):
         A = [None] * self.total_nodes
         nodes = [w for w in self.iterate(self.root_list)]
-        for w in xrange(0, len(nodes)):
+        for w in range(len(nodes)):
             x = nodes[w]
             d = x.degree
             while A[d] != None:
@@ -138,7 +138,7 @@ class FibonacciHeap:
         # find new min node - no need to reconstruct new root list below
         # because root list was iteratively changing as we were moving
         # nodes around in the above loop
-        for i in xrange(0, len(A)):
+        for i in range(len(A)):
             if A[i] is not None:
                 if A[i].data < self.min_node.data:
                     self.min_node = A[i]
