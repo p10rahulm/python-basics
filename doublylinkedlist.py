@@ -40,6 +40,7 @@ class DoubleList(object):
 
             current_node = current_node.next
 
+
     def show(self):
         print("Show list data:")
         current_node = self.head

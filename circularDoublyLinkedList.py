@@ -41,7 +41,6 @@ class DoubleList(object):
                 #    self.head = current_node.next
                 #    current_node.next.prev = None
             if current_node == self.tail: break
-
             current_node = current_node.next
 
     def show(self):

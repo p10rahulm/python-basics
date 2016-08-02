@@ -42,6 +42,7 @@ class SingleList(object):
             # needed for the next iteration
             previous_node = current_node
             current_node = current_node.next
+
 if __name__ == "__main__":
 
     s = SingleList()
