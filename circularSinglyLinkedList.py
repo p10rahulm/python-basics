@@ -13,12 +13,15 @@ class SingleList(object):
     def show(self):
         print("Showing list data:")
         current_node = self.head
-        while current_node is not None:
+        while True:
             print("data:",current_node.data, " -> ")
             if current_node.next is not None:
                 print("next:",current_node.next.data)
+            if current_node == self.tail:
+                break
             current_node = current_node.next
-        print(None)
+
+
 
     def append(self, data):
         node = Node(data, None)
@@ -27,21 +30,24 @@ class SingleList(object):
         else:
             self.tail.next = node
         self.tail = node
+        self.tail.next = self.head
 
     def remove(self, node_value):
         current_node = self.head
         previous_node = None
-        while current_node is not None:
+        while True:
             if current_node.data == node_value:
                 # if this is the first node (head)
                 if previous_node is not None:
                     previous_node.next = current_node.next
                 else:
                     self.head = current_node.next
-
+                    self.tail.next = current_node.next
+            if current_node == self.tail:                break
             # needed for the next iteration
             previous_node = current_node
             current_node = current_node.next
+
 if __name__ == "__main__":
 
     s = SingleList()

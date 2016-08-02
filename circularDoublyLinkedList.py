@@ -5,14 +5,10 @@ class Node(object):
         self.prev = prev
         self.next = next
 
-    # __str__ returns string equivalent of Object
-    def __str__(self):
-        return "Node[Data = %s]" % (self.data,)
-
 class DoubleList(object):
-    def __init__(self):
-        self.head = None
-        self.tail = None
+
+    head = None
+    tail = None
 
     def append(self, data):
         new_node = Node(data, None, None)
@@ -44,12 +40,11 @@ class DoubleList(object):
         print("Show list data:")
         current_node = self.head
         while current_node is not None:
-            print("prev:",current_node.prev.data if hasattr(current_node.prev, "data") else None,)
-            print("data:",current_node.data,)
-            print("next:",current_node.next.data if hasattr(current_node.next, "data") else None)
+            print(current_node.prev.data if hasattr(current_node.prev, "data") else None,)
+            print(current_node.data,)
+            print(current_node.next.data if hasattr(current_node.next, "data") else None)
 
             current_node = current_node.next
-        print("*"*50)
 
 if __name__ == "__main__":
     d = DoubleList()
@@ -58,10 +53,7 @@ if __name__ == "__main__":
     d.append(6)
     d.append(50)
     d.append(30)
-
     d.show()
-
     d.remove(50)
     d.remove(5)
-
     d.show()
