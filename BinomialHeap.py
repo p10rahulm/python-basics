@@ -14,8 +14,8 @@ from math import log2
 class BinomialHeap(object):
 
     class Node(object):
-        def __init__(self, val=None):
-            self.value = val
+        def __init__(self, value=None):
+            self.value = value
             if val is None:  # Dummy sentinel node at head of list
                 self.rank = -1
             else:  # Regular node
@@ -24,8 +24,12 @@ class BinomialHeap(object):
                 # as per definition of binomial tree
             self.leftmostchild = None
             self.rightsibling = None
+            self.leftsibling = None
             self.parent = None
+            self.degree = None
+            self.mark = False # Marker for whether node has lost a child since last time node was made child of parent node
 
+        '''
         def remove_root(self):
             assert self.next is None
             result = None
@@ -36,34 +40,71 @@ class BinomialHeap(object):
                 result = node
                 node = next
             return result
-
+        '''
     def __init__(self, heaplist_input=None):
         if heaplist_input == None:
-            self.heapList = [0]
+            self.heapList = []
             self.size = 0
+            self.minindex = None
+            self.rootlist =[]
         else:
-            self.heapList = [0] + heaplist_input
-            self.buildHeap(self.heapList)
+            self.heapList = heaplist_input
             self.size = len(heaplist_input)
+            self.minindex = 0
+            self.rootlist =[]
+            self.buildHeap(self.heapList)
 
     def __swap(self, firstindex, secondindex):
         tmp = self.heapList[secondindex]
         self.heapList[secondindex] = self.heapList[firstindex]
         self.heapList[firstindex] = tmp
 
+    def insert(self,elementval):
+        newnode = self.Node(elementval)
+        newnode.degree =0
+        newnode.parent = None
+        newnode.leftmostchild = None
+        newnode.mark = None
+        if self.minindex == None:
+            self.minindex = newnode
+            self.rootlist = [newnode]
+        else:
+            self.rootlist.append(newnode)
+            #self.heapList.append(newnode)
+            if newnode.value < self.minindex.value:
+                self.minindex = newnode
+        self.size +=1
+
+    def findmin(self):
+        return self.minindex.value
+
+    def union(self,heap2):
+        unionHeap = BinomialHeap()
+        unionHeap.minindex = self.minindex
+        unionHeap.rootlist = self.rootlist + heap2.rootlist
+        unionHeap.size = self.size + heap2.size
+        if self.minindex == None or (heap2.minindex != None and heap2.minindex.value < self.minindex.value):
+            unionHeap.minindex = heap2.minindex
+
+
+
     def buildheap(self,array):
+        #creating root pointers
         self.ntrees = int(log2(self.size)) + 1
+        self.rootlist = [0 for i in range(self.ntrees)]
         for i in range(self.ntrees):
-            self.treerootpointers[i] = 2**i
+            self.rootlist[i] = 2**i
+        #creating min pointer
         self.minval = float('inf')
-        for i in self.treerootpointers:
+        for i in self.rootlist:
             if self.heapList[i]<self.minpointer:
                 self.minpointer = i
                 self.minval = self.heapList[i]
-
-        for i in range(len(self.size)):
+        #creating nodes
+        for i in range(self.size):
             nodeslist = {}
-            nodeslist[i] = Node(self.heapList[i])
+            nodeslist[i] = self.Node(self.heapList[i])
+            nodeslist[i].parent
 
 
 
@@ -73,11 +114,6 @@ class BinomialHeap(object):
             if self.heapList[node_index] < self.heapList[(node_index - 1) // 2]:
                 self.__swap(node_index, (node_index - 1) // 2)
             node_index = (node_index - 1) // 2
-
-    def insert(self, insertElement):
-        self.heapList.append(insertElement)
-        self.size = self.size+ 1
-        self.percUp(self.size- 1)
 
 
 # Binomial heap (Python)
