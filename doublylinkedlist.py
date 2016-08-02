@@ -49,7 +49,7 @@ class DoubleList(object):
             print("next:",current_node.next.data if hasattr(current_node.next, "data") else None)
 
             current_node = current_node.next
-        print("*"*50)
+        #print("*"*50)
 
 if __name__ == "__main__":
     d = DoubleList()
@@ -64,4 +64,4 @@ if __name__ == "__main__":
     d.remove(50)
     d.remove(5)
 
-    d.show()
+    #d.show()
