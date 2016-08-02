@@ -26,6 +26,7 @@ class SortedArray(object):
 
     def __str__(self):
         return str(self.array)
+
     def insertval(self,value):
         rank = self.rank(value)
         newarray = self.array[:rank+1] + [value] + self.array[rank + 1:]
@@ -51,6 +52,11 @@ class SortedArray(object):
         if index !=None: self.array.pop(index)
         elif index ==None: self.array.pop()
         self.size -=1
+        return
+
+    def push(self,value):
+        self.insertval(value)
+        return
 
     def select(self,index):
         return self.array[index]
