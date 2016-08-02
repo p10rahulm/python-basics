@@ -35,7 +35,7 @@ class TreeNode:
     def __iter__(self):
         if self:
             if self.hasLeftChild():
-                for elem in self.leftChiLd:
+                for elem in self.leftChild:
                     yield elem
             yield self.key
             if self.hasRightChild():
@@ -160,6 +160,42 @@ class BinarySearchTree:
             current = current.leftChild
         return current
 
+    def findTreeMin(self):
+        current = self.root
+        while current.hasLeftChild():
+            current = current.leftChild
+        return current.payload
+
+    def find_predecessor(self,key):
+        current = self._find(key,self.root)
+        if current is None: return "Value not found"
+        if current.hasLeftChild():
+            current = self.leftChild
+            while current.hasRightChild():
+                current = current.rightChild
+            return current.payload
+        elif current.parent is not None:
+            keystore = current.key
+            while current.parent is not None:
+                current = current.parent
+                if current.key < keystore:
+                    return current.payload
+            return "Your key is minimum in tree"
+
+        else: return "No predecessor found"
+
+    def findMax(self):
+        current = self
+        while current.hasRightChild():
+            current = current.rightChild
+        return current
+
+    def findTreeMax(self):
+        current = self.root
+        while current.hasRightChild():
+            current = current.rightChild
+        return current.payload
+
     def spliceOut(self):
         if self.isLeaf():
             if self.isLeftChild():
@@ -224,7 +260,7 @@ class BinarySearchTree:
 if __name__ == "__main__":
     import time
     timestart = time.time()
-    for i in range(100000):
+    for i in range(10000):
         mytree = BinarySearchTree()
         mytree[3]="red"
         mytree[4]="blue"
@@ -234,4 +270,9 @@ if __name__ == "__main__":
 
     print(mytree[6])
     print(mytree[2])
+    for i in mytree:
+        print(mytree[i])
+    print(mytree.find_predecessor(6))
+    print(mytree.findTreeMax())
+    print(mytree.findTreeMin())
     print("time taken = ",time.time()-timestart)
