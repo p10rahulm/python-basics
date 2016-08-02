@@ -1,5 +1,5 @@
-from list_mergesort import mergesorts
-from list_mergesort import mergesorttwolists
+from Mergesort import mergesorts
+from Mergesort import mergesorttwolists
 from AvgMedian import nth_element_in_list
 
 #check distance between points

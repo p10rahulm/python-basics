@@ -80,7 +80,6 @@ if __name__ == "__main__":
     A = [8,4,1,6,7,2,6,2,2221]
     print(mergesorts(A))
 
-    return list2 sorted by mylist
 
     A = [8,4,1,6,7,2,6,2,2221]
     print(mergesorts(A))
