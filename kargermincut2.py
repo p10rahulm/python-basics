@@ -254,14 +254,14 @@ if __name__ == "__main__":
 
     #test3
     print("test3")
-    from openfile import read_adj_list_from_file
-    graph = read_adj_list_from_file("data/karger_cut.txt")
+    from openfile import openAdjListfromFile
+    graph = openAdjListfromFile("data/karger_cut.txt")
     #print("mincut = ",mincut_graph(graph))
     minsofar = 100
     totaltries = 100
     for i in range(totaltries):
         #timestart = time.time()
-        graph = read_adj_list_from_file("data/karger_cut.txt")
+        graph = openAdjListfromFile("data/karger_cut.txt")
         g = graph
         minthistime  = mincut_graph(g)
         if minsofar > minthistime :

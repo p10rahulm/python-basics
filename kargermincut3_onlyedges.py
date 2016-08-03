@@ -130,11 +130,11 @@ if __name__ == "__main__":
     #test3
     print("test3")
     testtime = time.time()
-    from openfile import read_adj_list_from_file
+    from openfile import openAdjListfromFile
 
     minsofar = 100
     totaltries = 10000
-    readgraph = read_adj_list_from_file("data/karger_cut.txt")
+    readgraph = openAdjListfromFile("data/karger_cut.txt")
 
     for i in range(totaltries):
         minthistime  = runkarger(readgraph)

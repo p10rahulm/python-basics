@@ -65,9 +65,22 @@ if __name__ == "__main__":
     print("=== Dijkstra ===")
     print(edges)
     print("A -> E:")
-    for i in range(100000):
+    for i in range(10000):
         djiks = dijkstra(edges, "A", "E")
     print(djiks)
     print("time taken = ", time.time() - timestart)
     print("F -> G:")
     print(dijkstra(edges, "F", "G"))
+
+    #test 2
+    print("test2")
+    from openfile import openAdjListwithWeightsfromFile
+    edges = openAdjListwithWeightsfromFile("data/djikstra.txt")
+    # report the shortest-path distances from node 1 to the following ten vertices, in order: 7,37,59,82,99,115,133,165,188,197.
+    othernodeslist = [7,37,59,82,99,115,133,165,188,197]
+    distances = []
+    for othernode in othernodeslist:
+        distances.append(dijkstra(edges,1,othernode)[0])
+    print(distances)
+    assert [2599, 2610, 2947, 2052, 2367, 2399, 2029, 2442, 2505, 3068] == distances
+    print("assertion passed")

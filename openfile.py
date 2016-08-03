@@ -5,12 +5,31 @@ def openfile_returnlist(csvfilename):
     with open(csvfilename) as f:
         x = list(map(float, f))
     return x
-def openfile_returnlist_as_string(csvfilename):
-    with open(csvfilename) as f:
+
+def openfile_returnlist_as_string(filename):
+    with open(filename) as f:
         x = list(map(str, f))
     return x
 
-def read_adj_list_from_file(filename):
+
+def openAdjListwithWeightsfromFile(filename):
+    g = open(filename,'r')
+    edges = []
+    for line in g:
+        x, *y = line.strip().split("\t")
+        for nodetuple in y:
+            nodetuple = nodetuple.split(",")
+            othernode = int(nodetuple[0])
+            weight = int(nodetuple[1])
+            edges.append((int(x),othernode,weight))
+    g.close()
+    return edges
+
+
+
+
+
+def openAdjListfromFile(filename):
     g = open(filename,'r')
     graph = defaultdict(list)
     for line in g:
@@ -32,12 +51,16 @@ def read_graph_edges_from_file(filename):
     return graph,nlines
 
 def adj_list_to_file(G,file_name):
-    f = open('tst.txt', "w")
+    f = open(file_name, "w")
     for n in G.nodes():
         f.write(str(n) + ' ')
         for neighbor in G.neighbors(n):
             f.write(str(neighbor) + ' ')
         f.write('\n')
 
+
 if __name__ == "__main__":
-    mylist = openfile_returnlist("data/CountInversionsData.txt")
+    #mylist = openfile_returnlist("data/CountInversionsData.txt")
+    edges = openAdjListwithWeightsfromFile("data/djikstra.txt")
+    print(edges[:20])
+

@@ -30,6 +30,7 @@ class TreeNode:
     def appendValuetoNode(self,value):
         self.count += 1
         self.payload.append(value)
+        return 1
 
 
     def __iter__(self):
@@ -53,6 +54,52 @@ class TreeNode:
         if self.hasRightChild():
             self.rightChild.parent = self
 
+    def findSuccessor(self):
+        succ = None
+        if self.hasRightChild():
+            succ = self.rightChild.findMin()
+        else:
+            if self.parent:
+                   if self.isLeftChild():
+                       succ = self.parent
+                   else:
+                       self.parent.rightChild = None
+                       succ = self.parent.findSuccessor()
+                       self.parent.rightChild = self
+        return succ
+
+    def findMax(self):
+        current = self
+        while current.hasRightChild():
+            current = current.rightChild
+        return current
+
+    def findMin(self):
+        current = self
+        while current.hasLeftChild():
+            current = current.leftChild
+        return current
+
+    def spliceOut(self):
+        if self.isLeaf():
+            if self.isLeftChild():
+                self.parent.leftChild = None
+            else:
+                self.parent.rightChild = None
+        elif self.hasAnyChildren():
+            if self.hasLeftChild():
+                if self.isLeftChild():
+                    self.parent.leftChild = self.leftChild
+                else:
+                    self.parent.rightChild = self.leftChild
+                self.leftChild.parent = self.parent
+            else:
+                if self.isLeftChild():
+                    self.parent.leftChild = self.rightChild
+                else:
+                    self.parent.rightChild = self.rightChild
+                self.rightChild.parent = self.parent
+
 class BinarySearchTree:
 
     def __init__(self):
@@ -69,15 +116,17 @@ class BinarySearchTree:
         return self.root.__iter__()
 
     def insert(self,key,val):
+        appended =0
         if self.root:
-            self._insert(key,val,self.root)
+            appended = self._insert(key,val,self.root)
         else:
             self.root = TreeNode(key,val)
-        self.size = self.size + 1
+        if appended!= 1: self.size = self.size + 1
 
     def _insert(self,key,val,currentNode):
         if key == currentNode.key:
-            currentNode.appendValuetoNode(val)
+            appended = currentNode.appendValuetoNode(val)
+            return appended
         if key < currentNode.key:
             if currentNode.hasLeftChild():
                 self._insert(key,val,currentNode.leftChild)
@@ -88,6 +137,7 @@ class BinarySearchTree:
                 self._insert(key,val,currentNode.rightChild)
             else:
                 currentNode.rightChild = TreeNode(key,val,parent=currentNode)
+        return 0
 
     # __setitem__ overloads the [] operator
     def __setitem__(self,k,v):
@@ -122,6 +172,7 @@ class BinarySearchTree:
             return True
         else:
             return False
+
     def delete(self,key):
         if self.size > 1:
             nodeToRemove = self._find(key,self.root)
@@ -140,25 +191,21 @@ class BinarySearchTree:
     def __delitem__(self,key):
         self.delete(key)
 
-    def findSuccessor(self):
+    def find_successor(self,key):
+        current_node = self._find(key,self.root)
         succ = None
-        if self.hasRightChild():
-            succ = self.rightChild.findMin()
+        if current_node.hasRightChild():
+            succ = current_node.rightChild.findMin()
         else:
-            if self.parent:
-                   if self.isLeftChild():
-                       succ = self.parent
+            if current_node.parent:
+                   if current_node.isLeftChild():
+                       succ = current_node.parent
                    else:
-                       self.parent.rightChild = None
-                       succ = self.parent.findSuccessor()
-                       self.parent.rightChild = self
+                       current_node.parent.rightChild = None
+                       succ = current_node.parent.findSuccessor()
+                       current_node.parent.rightChild = current_node
         return succ
 
-    def findMin(self):
-        current = self
-        while current.hasLeftChild():
-            current = current.leftChild
-        return current
 
     def findTreeMin(self):
         current = self.root
@@ -170,7 +217,7 @@ class BinarySearchTree:
         current = self._find(key,self.root)
         if current is None: return "Value not found"
         if current.hasLeftChild():
-            current = self.leftChild
+            current = current.leftChild
             while current.hasRightChild():
                 current = current.rightChild
             return current.payload
@@ -184,38 +231,13 @@ class BinarySearchTree:
 
         else: return "No predecessor found"
 
-    def findMax(self):
-        current = self
-        while current.hasRightChild():
-            current = current.rightChild
-        return current
+
 
     def findTreeMax(self):
         current = self.root
         while current.hasRightChild():
             current = current.rightChild
         return current.payload
-
-    def spliceOut(self):
-        if self.isLeaf():
-            if self.isLeftChild():
-                self.parent.leftChild = None
-            else:
-                self.parent.rightChild = None
-        elif self.hasAnyChildren():
-            if self.hasLeftChild():
-                if self.isLeftChild():
-                    self.parent.leftChild = self.leftChild
-                else:
-                    self.parent.rightChild = self.leftChild
-                self.leftChild.parent = self.parent
-            else:
-                if self.isLeftChild():
-                    self.parent.leftChild = self.rightChild
-                else:
-                    self.parent.rightChild = self.rightChild
-                self.rightChild.parent = self.parent
-
 
     def remove(self,currentNode):
         if currentNode.isLeaf(): #leaf
@@ -269,10 +291,22 @@ if __name__ == "__main__":
         mytree[2] ="hi"
 
     print(mytree[6])
-    print(mytree[2])
+    print("2=",mytree[2])
     for i in mytree:
         print(mytree[i])
-    print(mytree.find_predecessor(6))
+    print("6.pred = ",mytree.find_predecessor(6))
     print(mytree.findTreeMax())
     print(mytree.findTreeMin())
+    print(mytree.root.key)
+    mytree.delete(3)
+    print()
+    for i in mytree:
+        print(mytree[i])
+    print(mytree.root.key)
+    try:
+        mytree.delete(5)
+    except Exception as error:
+        print("not able to delete. error = ",error)
+    for i in mytree:
+        print(mytree[i])
     print("time taken = ",time.time()-timestart)
