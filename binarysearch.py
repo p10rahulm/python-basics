@@ -27,6 +27,27 @@ def binarysearch_return_index(sortedarray,value,indexstart):
 def binarysearch(sortedarray,value):
     return binarysearch_return_index(sortedarray,value,0)
 
+def binarysearchLowerThanorEqual(sortedarray,value): # This implementation returns lastindex lower or Equal to a certain value
+    return binarysearchle_return_index(sortedarray,value,0)
+
+
+def binarysearchle_return_index(sortedarray,value,indexstart):
+    a = len(sortedarray)
+    if a ==1:
+        if sortedarray[0] <= value: return indexstart
+        else: return False
+    elif a ==0: return False
+    k = int(a/2)
+    if sortedarray[k] ==value:
+        return indexstart + k
+    elif sortedarray[k] > value and sortedarray[k-1] < value:
+        return indexstart + k -1
+    elif sortedarray[k] > value:
+        return binarysearchle_return_index(sortedarray[:k],value,indexstart)
+    else: return binarysearchle_return_index(sortedarray[k+1:],value,indexstart+k+1)
+
+
+
 if __name__ == "__main__":
     A = []
     value = 2

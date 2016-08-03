@@ -1,5 +1,5 @@
 from collections import defaultdict
-
+import pickle
 
 def openfile_returnlist(csvfilename):
     with open(csvfilename) as f:
@@ -25,8 +25,44 @@ def openAdjListwithWeightsfromFile(filename):
     g.close()
     return edges
 
+def openNumberstoDictfromFile(filename):
+    dict = {}
+    g = open(filename,'r')
+    for line in g:
+        x = int(line.strip())
+        dict[x] = 1
+    g.close()
+    return dict
+
+def writelisttofile(outfilepath,itemlist):
+    with open(outfilepath, 'w') as file_handler:
+        for item in itemlist:
+            file_handler.write("{}\n".format(item))
+    # outfile = open( outfilepath, "w" )
+    # for item in itemlist:
+    #     print>>outfile, item
+    # outfile.close()
+
+def writelisttofilepickle(outfilepath,itemlist):
+    outfile = open( outfilepath, "wb" )
+    pickle.dump(itemlist, outfile)
+    outfile.close()
 
 
+def readlistfromfilepickle(infilepath):
+    infile = open( infilepath, "rb" )
+    itemlist = pickle.load(infile)
+    infile.close()
+    return itemlist
+
+def openNumberstoListfromFile(filename):
+    mylist = []
+    g = open(filename,'r')
+    for line in g:
+        x = int(line.strip())
+        mylist.append(x)
+    g.close()
+    return mylist
 
 
 def openAdjListfromFile(filename):
