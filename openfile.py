@@ -38,10 +38,7 @@ def writelisttofile(outfilepath,itemlist):
     with open(outfilepath, 'w') as file_handler:
         for item in itemlist:
             file_handler.write("{}\n".format(item))
-    # outfile = open( outfilepath, "w" )
-    # for item in itemlist:
-    #     print>>outfile, item
-    # outfile.close()
+
 
 def writelisttofilepickle(outfilepath,itemlist):
     outfile = open( outfilepath, "wb" )
