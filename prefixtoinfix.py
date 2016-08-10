@@ -3,14 +3,15 @@ def prefixtoinfix(mystr):
     queuedexprs = []
     allowed_operators = ['+','-','*','/','**','^','%']
     i =0
+    mystr = mystr[::-1]
     while i != len(mystr):
         if mystr[i] in allowed_operators: queuedopers.append(mystr[i])
         else: queuedexprs.append(mystr[i])
-        while len(queuedexprs) >=2 :
+        while len(queuedexprs) >=2 and len(queuedopers)>0:
                 a = queuedexprs.pop(-1)
                 b = queuedexprs.pop(-1)
                 infix_opr = queuedopers.pop(-1)
-                queuedexprs.append("(" + b + infix_opr + a + ")")
+                queuedexprs.append("(" + a + infix_opr + b + ")")
         i+=1
     return queuedexprs[0]
 
