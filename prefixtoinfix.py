@@ -16,5 +16,10 @@ def prefixtoinfix(mystr):
     return queuedexprs[0]
 
 if __name__ == "__main__":
+    import time
+    starttime = time.time()
     print("test 1")
+    for i in range(100000):
+        c = prefixtoinfix("/+2b-3a")
     print(prefixtoinfix("/+2b-3a"))
+    print("time taken = ",time.time() - starttime)
