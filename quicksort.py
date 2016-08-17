@@ -36,7 +36,9 @@ def partition(listA,indexstart,indexend):
     #swapping with random is a goodroutine and improves upon taking first element
     #randomtofirst(listA,indexstart,indexend)
     #swapping with median of first, middle and last element works for already almost sorted arrays
-    swapmedianwithstart(listA,indexstart,indexend)
+    #swapmedianwithstart(listA,indexstart,indexend)
+    #swap last with first
+    swap(listA,indexend,indexstart)
     pivotvalue = listA[indexstart]
     indexLeft = indexstart+1
     indexRight = indexend
@@ -84,6 +86,7 @@ if __name__ == "__main__":
     filename = "data/countqsortdata.txt"
     data = openfile_returnlist(filename)
     quickSort(data)
+    print("data10 = ",data[:10])
     print(counter)
 
 
@@ -99,14 +102,14 @@ if __name__ == "__main__":
 
     import time
     start_time = time.time()
-    listA = list(range(1000000,0,-1))
+    listA = list(range(100,0,-1))
     quickSort(listA)
-    print(listA[0:100])
+    print(listA[0:10])
     print("--- %s seconds ---" % (time.time() - start_time))
 
     from Mergesort import mergesorts
     start_time = time.time()
-    listA = list(range(1000000,0,-1))
-    print(mergesorts(listA)[0:100])
+    listA = list(range(100,0,-1))
+    print(mergesorts(listA)[0:10])
     print("--- %s seconds ---" % (time.time() - start_time))
 
