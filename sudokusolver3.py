@@ -12,27 +12,27 @@ numsudokuobjects = 0
 class Sudoku(object):
     def __init__(self, input_list):
         self.input_list = input_list
-        #sidelength = int(sqrt(len(input_list)))
-        #self.input_matrix = [[input_list[k * sidelength + j] for j in range(sidelength)] for k in range(sidelength)]
         self.build_matrix(self.input_list)
         self.solved = False
-        #self.checksolved()
         self.reducedtovaluelastloop = True
 
     def getmin_unfillednode(self):
         minnode = None
         lenmin = 9
+        print("mystr",self.get_list_as_string())
         for node in self.nodes:
-            if len(node.allowed_set)!=1 and len(node.allowed_set)<lenmin:
-                lenmin=len(node.allowed_set)
+            if len(node.allowedset)> 1 and len(node.allowedset)<lenmin:
+                lenmin=len(node.allowedset)
                 minnode = node
         return minnode
 
 
     def checksolved(self):
+        print("in checksolved")
         solved = True
         for row in self.rows:
             if not row.isfixed():
+                print("row is not fixed",self.nodes[80].allowedset)
                 solved = False
                 break
         if solved:
@@ -53,18 +53,20 @@ class Sudoku(object):
         #print("in checkfilled")
         solved = True
         for elem in self.nodes:
-            if not elem.fixed:
+            #print("elem = ",elem,"len(elem)=",len(elem.allowedset),"elem")
+            if len(elem.allowedset) != 1:
+                #print("elem.allowedset",elem.allowedset)
                 solved = False
                 break
         self.solved = solved
-        #print(self.solved)
+        #print(self.solved,self.nodes[2].allowedset)
         return self.solved
 
     def get_list(self):
         self.currentlist = []
         for node in self.nodes:
-            if node.fixed:
-                self.currentlist.append(node.value)
+            if len(node.allowedset) == 1:
+                self.currentlist.append(tuple(node.allowedset)[0])
             else:
                 self.currentlist.append(None)
         return self.currentlist
@@ -83,10 +85,11 @@ class Sudoku(object):
             for i in range(81):
                 reducedforelem = False
                 reducedtovalelement = False
-                if self.nodes[i].value is None:
-                    reducedforelem = self.nodes[i].reduceSet()
-                    if len(self.nodes[i].allowed_set) ==1:
+                if len(self.nodes[i].allowedset) > 1:
+                    reducedforelem = self.nodes[i].reducenode()
+                    if len(self.nodes[i].allowedset) ==1:
                         reducedtovalelement = True
+                        self.nodes[i].updateneighbours()
                 reducedsomething = reducedsomething or reducedforelem
                 self.reducedtovaluelastloop = self.reducedtovaluelastloop or reducedtovalelement
             reducenodetime += time.time() - looptime
@@ -121,9 +124,10 @@ class Sudoku(object):
     def __deepcopy__(self):
         result = Sudoku(self.get_list())
         for i in range(81):
-            result.nodes[i].allowed_set = self.nodes[i].allowed_set.copy()
-            result.nodes[i].value = self.nodes[i].value
-            result.nodes[i].fixed = self.nodes[i].fixed
+            result.nodes[i].allowedset = result.nodes[i].allowedset.copy()
+            #while(len(result.nodes[i].allowedset)): result.nodes[i].allowedset.pop()
+            #for j in self.nodes[i]:
+            #    result.nodes[i].add(j)
         for i in range(9):
             result.rows[i].fixed = self.rows[i].fixed
             result.cols[i].fixed = self.cols[i].fixed
@@ -154,54 +158,39 @@ class Sudoku(object):
         looptime = time.time()
         for i in range(81):
             looptime = time.time()
-            newnode = Node(input_matrix[i])
+            newnode = Node(self.rows[i // 9],self.rows[i % 9],self.squares[((i // 27) * 3) + ((i % 9) // 3)])
+            if input_matrix[i] is not None:
+                newnode.allowedset.add(input_matrix[i])
+            else:
+                for j in range(1,10): newnode.allowedset.add(j)
             nodebuildtime += time.time() - looptime
-            #if input_matrix[i]: newnode = Node(input_matrix[i]) #isinstance(input_matrix[i], int):                newnode = Node(input_matrix[i])
             self.nodes.append(newnode)
             inlooptime = time.time()
-            self.rows[i // 9].add_node(newnode)
-            self.cols[i % 9].add_node(newnode)
-            self.squares[((i // 27) * 3) + ((i % 9) // 3)].add_node(newnode)
+            self.rows[i // 9].append(newnode)
+            self.cols[i % 9].append(newnode)
+            self.squares[((i // 27) * 3) + ((i % 9) // 3)].append(newnode)
             rcsbuildtime += time.time() - inlooptime
         nodebuildtime += time.time() - looptime
         buildtime += time.time() - buildtimest
 
 
 class Row(list):
-
-    def __init__(self, memberslist=None):
-        if memberslist is not None: self += memberslist
+    def __init__(self):
         self.fixed = False
-
-    def add_node(self, node):
-        self.append(node)
-        node.row = self
-
-    def get_elems(self):
-        return list(self)
-
-    def reduce(self):
-        for elem in self:
-            elem.reduceSet()
 
     def isfixed(self):
-        self.fixed = False
-        elemset = set()
-        for elem in self:
-            if elem.value is not None:
-                elemset.add(elem.value)
-        if elemset == set(range(1, 10)):
-            self.fixed = True
+        #print("inside isfixed. len seld is",len(self))
+        if not self.fixed :
+            #print("inside if not self.fixed")
+            elemset = set()
+            for elem in self:
+                #print(elem.allowedset)
+                if len(elem.allowedset) == 1:
+                    elemset.add(tuple(elem.allowedset)[0])
+            #print("elemset = ",elemset)
+            if elemset == set(range(1, 10)):
+                self.fixed = True
         return self.fixed
-
-    def is_filled(self):
-        self.filled = False
-        for elem in self:
-            if not elem.filled:
-                return self.filled
-        else:
-            self.filled = True
-            return self.filled
 
     def reduce_subsets(self):
         subsetlentocheck = 1
@@ -209,28 +198,28 @@ class Row(list):
         reducedtoval = False
         reducedelem = False
         for i in range(len(self)):
-            if len(self[i].allowed_set) > 1:
+            if len(self[i].allowedset) > 1:
                 notfixedelems.add(i)
-        while subsetlentocheck < len(notfixedelems) and len(notfixedelems) > 2 and not reducedtoval:
+        while subsetlentocheck < len(notfixedelems.allowedset) and len(notfixedelems.allowedset) > 2 and not reducedtoval:
             for subset in combinations(notfixedelems,subsetlentocheck):
                 elemset = set([])
                 for node in subset:
-                    elemset = elemset.union(self[node].allowed_set)
+                    elemset = elemset.union(self[node].allowedset)
                 if len(elemset) == subsetlentocheck:
                     for notsubsetelem  in notfixedelems.difference(subset):
-                        startelemsetlen = len(self[notsubsetelem].allowed_set)
-                        if len(self[notsubsetelem].allowed_set) != 1:
-                            self[notsubsetelem].allowed_set = self[notsubsetelem].allowed_set.difference(elemset)
-                        if len(self[notsubsetelem].allowed_set) <startelemsetlen:
+                        startelemsetlen = len(self[notsubsetelem].allowedset)
+                        if len(self[notsubsetelem].allowedset) != 1:
+                            self[notsubsetelem].allowedset = self[notsubsetelem].allowedset.difference(elemset)
+                        if len(self[notsubsetelem].allowedset) < startelemsetlen:
                             reducedelem = True
-                        if len(self[notsubsetelem].allowed_set) == 1:
+                        if len(self[notsubsetelem].allowedset) == 1:
                             reducedtoval = True
-
-                    if reducedtoval: break
+                            self[notsubsetelem].updateneighbours()
+                if reducedtoval: break
+                notfixedelems = set([])
+                for i in range(len(self)):
+                    if len(self[i]) > 1:                notfixedelems.allowedset.add(i)
             if reducedtoval: break
-            notfixedelems = set([])
-            for i in range(len(self)):
-                if len(self[i].allowed_set) > 1:                notfixedelems.add(i)
             subsetlentocheck +=1
         reducedelem = reducedtoval or reducedelem
         return (reducedtoval,reducedelem)
@@ -244,35 +233,15 @@ class Col(list):
         if memberslist is not None: self += memberslist
         self.fixed = False
 
-    def add_node(self, node):
-        self.append(node)
-        node.col = self
-
-    def get_elems(self):
-        return list(self)
-
-    def reduce(self):
-        for elem in self:
-            elem.reduceSet()
-
     def isfixed(self):
-        self.fixed = False
-        elemset = set()
-        for elem in self:
-            if elem.value is not None:
-                elemset.add(elem.value)
-        if elemset == set(range(1, 10)):
-            self.fixed = True
+        if not self.fixed :
+            elemset = set()
+            for elem in self:
+                if len(elem.allowedset) == 1:
+                    elemset.add(tuple(elem.allowedset)[0])
+            if elemset == set(range(1, 10)):
+                self.fixed = True
         return self.fixed
-
-    def is_filled(self):
-        self.filled = False
-        for elem in self:
-            if not elem.filled:
-                return self.filled
-        else:
-            self.filled = True
-            return self.filled
 
     def reduce_subsets(self):
         subsetlentocheck = 1
@@ -280,31 +249,33 @@ class Col(list):
         reducedtoval = False
         reducedelem = False
         for i in range(len(self)):
-            if len(self[i].allowed_set) > 1:
+            if len(self[i].allowedset) > 1:
                 notfixedelems.add(i)
-        while subsetlentocheck < len(notfixedelems) and len(notfixedelems) > 2 and not reducedtoval:
+        while subsetlentocheck < len(notfixedelems.allowedset) and len(notfixedelems.allowedset) > 2 and not reducedtoval:
             for subset in combinations(notfixedelems,subsetlentocheck):
                 elemset = set([])
                 for node in subset:
-                    elemset = elemset.union(self[node].allowed_set)
+                    elemset = elemset.union(self[node].allowedset)
                 if len(elemset) == subsetlentocheck:
                     for notsubsetelem  in notfixedelems.difference(subset):
-                        startelemsetlen = len(self[notsubsetelem].allowed_set)
-                        if len(self[notsubsetelem].allowed_set) != 1:
-                            self[notsubsetelem].allowed_set = self[notsubsetelem].allowed_set.difference(elemset)
-                        if len(self[notsubsetelem].allowed_set) <startelemsetlen:
+                        startelemsetlen = len(self[notsubsetelem].allowedset)
+                        if len(self[notsubsetelem].allowedset) != 1:
+                            self[notsubsetelem].allowedset = self[notsubsetelem].allowedset.difference(elemset)
+                        if len(self[notsubsetelem].allowedset) < startelemsetlen:
                             reducedelem = True
-                        if len(self[notsubsetelem].allowed_set) == 1:
+                        if len(self[notsubsetelem].allowedset) == 1:
                             reducedtoval = True
-
-                    if reducedtoval: break
+                            self[notsubsetelem].updateneighbours()
+                if reducedtoval: break
+                notfixedelems = set([])
+                for i in range(len(self)):
+                    if len(self[i]) > 1:                notfixedelems.allowedset.add(i)
             if reducedtoval: break
-            notfixedelems = set([])
-            for i in range(len(self)):
-                if len(self[i].allowed_set) > 1:                notfixedelems.add(i)
             subsetlentocheck +=1
         reducedelem = reducedtoval or reducedelem
         return (reducedtoval,reducedelem)
+
+
 
 
 class Square(list):
@@ -312,36 +283,16 @@ class Square(list):
         if memberslist is not None: self += memberslist
         self.fixed = False
 
-
-    def add_node(self, node):
-        self.append(node)
-        node.square = self
-
-    def get_elems(self):
-        return list(self)
-
-    def reduce(self):
-        for elem in self:
-            elem.reduceSet()
-
     def isfixed(self):
-        self.fixed = False
-        elemset = set()
-        for elem in self:
-            if elem.value is not None:
-                elemset.add(elem.value)
-        if elemset == set(range(1, 10)):
-            self.fixed = True
+        if not self.fixed :
+            elemset = set()
+            for elem in self:
+                if len(elem.allowedset) == 1:
+                    elemset.add(tuple(elem.allowedset)[0])
+            if elemset == set(range(1, 10)):
+                self.fixed = True
         return self.fixed
 
-    def is_filled(self):
-        self.filled = False
-        for elem in self:
-            if not elem.filled:
-                return self.filled
-        else:
-            self.filled = True
-            return self.filled
 
     def reduce_subsets(self):
         subsetlentocheck = 1
@@ -349,169 +300,147 @@ class Square(list):
         reducedtoval = False
         reducedelem = False
         for i in range(len(self)):
-            if len(self[i].allowed_set) > 1:
+            if len(self[i].allowedset) > 1:
                 notfixedelems.add(i)
-        while subsetlentocheck < len(notfixedelems) and len(notfixedelems) > 2 and not reducedtoval:
+        while subsetlentocheck < len(notfixedelems.allowedset) and len(notfixedelems.allowedset) > 2 and not reducedtoval:
             for subset in combinations(notfixedelems,subsetlentocheck):
                 elemset = set([])
                 for node in subset:
-                    elemset = elemset.union(self[node].allowed_set)
+                    elemset = elemset.union(self[node].allowedset)
                 if len(elemset) == subsetlentocheck:
                     for notsubsetelem  in notfixedelems.difference(subset):
-                        startelemsetlen = len(self[notsubsetelem].allowed_set)
-                        if len(self[notsubsetelem].allowed_set) != 1:
-                            self[notsubsetelem].allowed_set = self[notsubsetelem].allowed_set.difference(elemset)
-                        if len(self[notsubsetelem].allowed_set) <startelemsetlen:
+                        startelemsetlen = len(self[notsubsetelem].allowedset)
+                        if len(self[notsubsetelem].allowedset) != 1:
+                            self[notsubsetelem].allowedset = self[notsubsetelem].allowedset.difference(elemset)
+                        if len(self[notsubsetelem].allowedset) < startelemsetlen:
                             reducedelem = True
-                        if len(self[notsubsetelem].allowed_set) == 1:
+                        if len(self[notsubsetelem].allowedset) == 1:
                             reducedtoval = True
                             self[notsubsetelem].updateneighbours()
-
-                    if reducedtoval: break
+                if reducedtoval: break
+                notfixedelems = set([])
+                for i in range(len(self)):
+                    if len(self[i]) > 1:                notfixedelems.allowedset.add(i)
             if reducedtoval: break
-            notfixedelems = set([])
-            for i in range(len(self)):
-                if len(self[i].allowed_set) > 1:                notfixedelems.add(i)
             subsetlentocheck +=1
         reducedelem = reducedtoval or reducedelem
         return (reducedtoval,reducedelem)
 
-class Node(object):
-    def __init__(self, value=None):
-        self.value = value
-        self.checkinits()
-        #self.row = None
-        #self.col = None
-        #self.square = None
 
-    def checkinits(self):
-        if self.value:
-            self.allowed_set = set([self.value])
-            self.fixed = True
-        else:
-            self.allowed_set = set(range(1, 10))
-            self.fixed = False
+
+class Node(object):
+    def __init__(self, row,col,square):
+        self.row = row
+        self.col = col
+        self.square = square
+        self.allowedset = set([])
+        #if value: self.add(value)
+        #else:
+        #    self = set([])
+        #    for i in range(1,10): self.add(i)
+        #    print(self)
 
     def updateneighbours(self):
+        #print("in update neigbours",self.allowedset,self.col)
         for elem in self.row:
-            elem.allowed_set.discard(self.value)
+            if len(elem.allowedset) > 1:
+                elem.allowedset.discard(tuple(self.allowedset)[0])
+                if len(elem.allowedset) == 1:
+                    elem.updateneighbours()
+
         for elem in self.col:
-            elem.allowed_set.discard(self.value)
+            if len(elem.allowedset) > 1:
+                elem.allowedset.discard(tuple(self.allowedset)[0])
+                if len(elem.allowedset) == 1:
+                    elem.updateneighbours()
+
         for elem in self.square:
-            elem.allowed_set.discard(self.value)
+            if len(elem.allowedset) > 1:
+                elem.allowedset.discard(tuple(self.allowedset)[0])
+                if len(elem.allowedset) == 1:
+                    elem.updateneighbours()
 
+    def reducenode(self):
+        for elem in self.row:
+            if len(elem.allowedset) == 1 and elem is not self and len(self.allowedset)>1:
+                self.allowedset.discard(tuple(elem.allowedset)[0])
+        if len(self.allowedset)==1: self.updateneighbours()
 
-    def checkFixed(self):
-        if len(self.allowed_set) == 1 and not self.fixed:
-            self.fixed = True
-            self.value = tuple(self.allowed_set)[0]
-            return self.fixed
-        else:
-            return self.fixed
+        for elem in self.col:
+            if len(elem.allowedset) == 1 and elem is not self and len(self.allowedset)>1:
+                self.allowedset.discard(tuple(elem.allowedset)[0])
+        if len(self.allowedset)==1: self.updateneighbours()
 
-    def reducebyrow(self):
-        if not self.fixed:
-            for elem in self.row:
-                if elem.fixed and elem is not self:
-                    self.allowed_set.discard(elem.value)
-            self.checkFixed()
-        if not self.fixed:
+        for elem in self.square:
+            if len(elem.allowedset) == 1 and elem is not self and len(self.allowedset)>1:
+                self.allowedset.discard(tuple(elem.allowedset)[0])
+
+        if len(self.allowedset)==1: self.updateneighbours()
+        if len(self.allowedset)>1:
             othersunion = set([])
             for elem in self.row:
                 if elem is not self:
-                    othersunion = othersunion.union(elem.allowed_set)
+                    othersunion = othersunion.union(elem.allowedset)
             remainset = set(range(1,10)).difference(othersunion)
-            if len(remainset) == 1:
-                self.allowed_set = remainset
-                self.fixed = True
-                self.value = tuple(remainset)[0]
-            self.checkFixed()
-
-    def reducebycol(self):
-        if self.col is not None and not self.fixed:
-            for elem in self.col:
-                if elem.fixed and elem is not self:
-                    self.allowed_set.discard(elem.value)
-            self.checkFixed()
-        if self.col is not None and not self.fixed:
+            if len(remainset) == 1: self.allowedset = remainset
+            if len(self.allowedset)==1: self.updateneighbours()
+        if len(self.allowedset)>1:
             othersunion = set([])
             for elem in self.col:
                 if elem is not self:
-                    othersunion = othersunion.union(elem.allowed_set)
+                    othersunion = othersunion.union(elem.allowedset)
             remainset = set(range(1,10)).difference(othersunion)
-            if len(remainset) == 1:
-                self.allowed_set = remainset
-                self.fixed = True
-                self.value = tuple(remainset)[0]
-            self.checkFixed()
-
-    def reducebysquare(self):
-        if self.square is not None and not self.fixed:
-            for elem in self.square:
-                if elem.fixed and elem is not self:
-                    self.allowed_set.discard(elem.value)
-            self.checkFixed()
-        if self.square is not None and not self.fixed:
+            if len(remainset) == 1: self.allowedset = remainset
+            if len(self.allowedset)==1: self.updateneighbours()
+        if len(self.allowedset)>1:
             othersunion = set([])
             for elem in self.square:
                 if elem is not self:
-                    othersunion = othersunion.union(elem.allowed_set)
+                    othersunion = othersunion.union(elem.allowedset)
             remainset = set(range(1,10)).difference(othersunion)
-            if len(remainset) == 1:
-                self.allowed_set = remainset
-                self.fixed = True
-                self.value = tuple(remainset)[0]
-            self.checkFixed()
-
-    def reduceSet(self):
-        initialfix = len(self.allowed_set)
-        self.reducebyrow()
-        self.reducebycol()
-        self.reducebysquare()
-        if len(self.allowed_set) ==1:
-            self.fixed = True
-            self.value = tuple(self.allowed_set)[0]
-        return len(self.allowed_set) < (initialfix)
-
-    def set_square(self, square):
-        self.square = square
-
-    def get_square(self):
-        return self.square
-
-    def set_row(self, row):
-        self.row = row
-
-    def get_row(self):
-        return self.row
-
-    def set_col(self, col):
-        self.col = col
-
-    def get_col(self):
-        return self.col
+            if len(remainset) == 1: self.allowedset = remainset
+            if len(self.allowedset)==1: self.updateneighbours()
 
 
 def reduceall(sudokuObject):
     reducedsomething = True
+    #print("inside reduceall")
     while reducedsomething:
+        #print("running reduce loop")
         reducedsomething = sudokuObject.run_reduce_loop()
+    #print("out of while")
     if sudokuObject.checksolved():
         return sudokuObject
     elif sudokuObject.checkfilled():
+        print("inside checkfilled",sudokuObject.get_list_as_string())
         return None
     else:
+        print("in blank")
+        for i in range(len(sudokuObject.nodes)):
+            if len(sudokuObject.nodes[i].allowedset) ==0:
+                #print("sudokuObject.nodes[i].allowedset",sudokuObject.nodes[i].allowedset,"i = ",i)
+                print("sudokuObject.get_list_as_string() =",sudokuObject.get_list_as_string())
+                return None
+
+        print("inside random")
         minnode = sudokuObject.getmin_unfillednode()
-        if len(minnode.allowed_set) == 0: return None
-        for permuted in (minnode.allowed_set):
+        print(minnode.allowedset)
+        if len(minnode.allowedset) == 0:
+            return None
+        permutor = set()
+        for i in minnode.allowedset: permutor.add(i)
+        for permuted in permutor:
+            #print("in permuted part",minnode,"permuted = ",permuted)
             global numsudokuobjects
             numsudokuobjects +=1
-            minnode.allowed_set = set([permuted])
-            minnode.value = permuted
-            minnode.fixed = True
+            minnode.allowedset = set([permuted])
+            #minnode.value = permuted
+            #minnode.fixed = True
             newsudokuObject = sudokuObject.__deepcopy__()
             solvediteration = reduceall(newsudokuObject)
-            if solvediteration is not None: return solvediteration
+            if solvediteration is not None:
+                print("returning solved iteration")
+                return solvediteration
         return None
 
 
@@ -531,14 +460,15 @@ if __name__ == "__main__":
 
     starttime = time.time()
     numsudokuobjects = 0
-    input_string = '.94...13..............76..2.8..1.....32.........2...6.....5.4.......8..7..63.4..8'
-    print(run_sudokusolver(input_string))
+    #input_string = '.94...13..............76..2.8..1.....32.........2...6.....5.4.......8..7..63.4..8'
+    #print(run_sudokusolver(input_string))
     print("number of sudoku objects created = ",numsudokuobjects)
 
     numsudokuobjects = 0
-    input_string = '...16...83154896..678...49.45..1287998357..167..69853456....78383..26145.....596.'
+    input_string = '29416735831548962767825349145631287998357421672169853456294178383972614514783596.'
     print(run_sudokusolver(input_string))
     print("number of sudoku objects created = ",numsudokuobjects)
+
 
     numsudokuobjects = 0
     input_string = '...16...831..896..67....49.45..12..9983.7..167..698..456....78383..26145.....596.'
@@ -566,10 +496,11 @@ if __name__ == "__main__":
             sudokupuzzles.append(line.strip())
     puzzleno = 1
     for puzzle in sudokupuzzles:
-        run_sudokusolver(puzzle)
-        #print(run_sudokusolver(puzzle))
+        #run_sudokusolver(puzzle)
+        print(run_sudokusolver(puzzle))
         puzzleno +=1
-        #if puzzleno ==5: break
+        if puzzleno ==5: break
+
     print("time taken = ",time.time()-starttime)
     print("build time taken = ",buildtime)
     print("rcs buildtime = ",rcsbuildtime)
