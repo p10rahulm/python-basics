@@ -28,6 +28,11 @@ class Sudoku(object):
                 minnode = node
         return minnode
 
+    def shownodeslist(self):
+        mylist = []
+        for i in range(len(self.nodes)):
+            mylist.append(self.nodes[i].allowed_set)
+        print(mylist)
 
     def checksolved(self):
         solved = True
@@ -225,6 +230,7 @@ class Row(list):
                             reducedelem = True
                         if len(self[notsubsetelem].allowed_set) == 1:
                             reducedtoval = True
+                            self[notsubsetelem].updateneighbours()
 
                     if reducedtoval: break
             if reducedtoval: break
@@ -296,6 +302,7 @@ class Col(list):
                             reducedelem = True
                         if len(self[notsubsetelem].allowed_set) == 1:
                             reducedtoval = True
+                            self[notsubsetelem].updateneighbours()
 
                     if reducedtoval: break
             if reducedtoval: break
@@ -394,12 +401,11 @@ class Node(object):
 
     def updateneighbours(self):
         for elem in self.row:
-            elem.allowed_set.discard(self.value)
+            if elem is not self:            elem.allowed_set.discard(self.value)
         for elem in self.col:
-            elem.allowed_set.discard(self.value)
+            if elem is not self:            elem.allowed_set.discard(self.value)
         for elem in self.square:
-            elem.allowed_set.discard(self.value)
-
+            if elem is not self:            elem.allowed_set.discard(self.value)
 
     def checkFixed(self):
         if len(self.allowed_set) == 1 and not self.fixed:

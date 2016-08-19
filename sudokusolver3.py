@@ -19,20 +19,27 @@ class Sudoku(object):
     def getmin_unfillednode(self):
         minnode = None
         lenmin = 9
-        print("mystr",self.get_list_as_string())
+        #print("mystr",self.get_list_as_string())
         for node in self.nodes:
             if len(node.allowedset)> 1 and len(node.allowedset)<lenmin:
                 lenmin=len(node.allowedset)
                 minnode = node
         return minnode
 
+    def shownodeslist(self):
+        mylist = []
+        for i in range(len(self.nodes)):
+            mylist.append(self.nodes[i].allowedset)
+        print(mylist)
 
     def checksolved(self):
-        print("in checksolved")
+        #print("in checksolved")
         solved = True
         for row in self.rows:
             if not row.isfixed():
-                print("row is not fixed",self.nodes[80].allowedset)
+                #print("row is not fixed",)
+                #for elem in row: print(elem.allowedset,)
+
                 solved = False
                 break
         if solved:
@@ -158,7 +165,7 @@ class Sudoku(object):
         looptime = time.time()
         for i in range(81):
             looptime = time.time()
-            newnode = Node(self.rows[i // 9],self.rows[i % 9],self.squares[((i // 27) * 3) + ((i % 9) // 3)])
+            newnode = Node(self.rows[i // 9],self.cols[i % 9],self.squares[((i // 27) * 3) + ((i % 9) // 3)])
             if input_matrix[i] is not None:
                 newnode.allowedset.add(input_matrix[i])
             else:
@@ -200,7 +207,7 @@ class Row(list):
         for i in range(len(self)):
             if len(self[i].allowedset) > 1:
                 notfixedelems.add(i)
-        while subsetlentocheck < len(notfixedelems.allowedset) and len(notfixedelems.allowedset) > 2 and not reducedtoval:
+        while subsetlentocheck < len(notfixedelems) and len(notfixedelems) > 2 and not reducedtoval:
             for subset in combinations(notfixedelems,subsetlentocheck):
                 elemset = set([])
                 for node in subset:
@@ -218,7 +225,7 @@ class Row(list):
                 if reducedtoval: break
                 notfixedelems = set([])
                 for i in range(len(self)):
-                    if len(self[i]) > 1:                notfixedelems.allowedset.add(i)
+                    if len(self[i].allowedset) > 1:                notfixedelems.add(i)
             if reducedtoval: break
             subsetlentocheck +=1
         reducedelem = reducedtoval or reducedelem
@@ -251,7 +258,7 @@ class Col(list):
         for i in range(len(self)):
             if len(self[i].allowedset) > 1:
                 notfixedelems.add(i)
-        while subsetlentocheck < len(notfixedelems.allowedset) and len(notfixedelems.allowedset) > 2 and not reducedtoval:
+        while subsetlentocheck < len(notfixedelems) and len(notfixedelems) > 2 and not reducedtoval:
             for subset in combinations(notfixedelems,subsetlentocheck):
                 elemset = set([])
                 for node in subset:
@@ -269,7 +276,7 @@ class Col(list):
                 if reducedtoval: break
                 notfixedelems = set([])
                 for i in range(len(self)):
-                    if len(self[i]) > 1:                notfixedelems.allowedset.add(i)
+                    if len(self[i].allowedset) > 1:                notfixedelems.add(i)
             if reducedtoval: break
             subsetlentocheck +=1
         reducedelem = reducedtoval or reducedelem
@@ -293,7 +300,6 @@ class Square(list):
                 self.fixed = True
         return self.fixed
 
-
     def reduce_subsets(self):
         subsetlentocheck = 1
         notfixedelems = set([])
@@ -302,7 +308,7 @@ class Square(list):
         for i in range(len(self)):
             if len(self[i].allowedset) > 1:
                 notfixedelems.add(i)
-        while subsetlentocheck < len(notfixedelems.allowedset) and len(notfixedelems.allowedset) > 2 and not reducedtoval:
+        while subsetlentocheck < len(notfixedelems) and len(notfixedelems) > 2 and not reducedtoval:
             for subset in combinations(notfixedelems,subsetlentocheck):
                 elemset = set([])
                 for node in subset:
@@ -320,7 +326,7 @@ class Square(list):
                 if reducedtoval: break
                 notfixedelems = set([])
                 for i in range(len(self)):
-                    if len(self[i]) > 1:                notfixedelems.allowedset.add(i)
+                    if len(self[i].allowedset) > 1:                notfixedelems.add(i)
             if reducedtoval: break
             subsetlentocheck +=1
         reducedelem = reducedtoval or reducedelem
@@ -340,27 +346,61 @@ class Node(object):
         #    for i in range(1,10): self.add(i)
         #    print(self)
 
-    def updateneighbours(self):
-        #print("in update neigbours",self.allowedset,self.col)
+    def showrowlists(self):
+        #print("in show row lists")
+        mylist = []
         for elem in self.row:
-            if len(elem.allowedset) > 1:
+            mylist.append(elem.allowedset)
+        print("self = ",self.allowedset,"row = ",mylist)
+
+    def showcollists(self):
+        #print("in show col lists")
+        mylist = []
+        for elem in self.col:
+            mylist.append(elem.allowedset)
+        print("self = ",self.allowedset,"col = ",mylist)
+
+    def showsqlists(self):
+        #print("in show sq lists")
+        mylist = []
+        for elem in self.square:
+            mylist.append(elem.allowedset)
+        print("self = ",self.allowedset,"sq = ",mylist)
+    '''
+    def updateneighbours(self):
+        for elem in self.row:
+            if elem is not self:            elem.allowedset.discard(tuple(self.allowedset)[0])
+        for elem in self.col:
+            if elem is not self:            elem.allowedset.discard(tuple(self.allowedset)[0])
+        for elem in self.square:
+            if elem is not self:            elem.allowedset.discard(tuple(self.allowedset)[0])
+    '''
+    def updateneighbours(self):
+        #print("in update neigbours", )
+        #self.showrowlists()
+        #self.showcollists()
+        #self.showsqlists()
+
+        for elem in self.row:
+            if len(elem.allowedset) > 1 and elem is not self:
                 elem.allowedset.discard(tuple(self.allowedset)[0])
                 if len(elem.allowedset) == 1:
                     elem.updateneighbours()
 
         for elem in self.col:
-            if len(elem.allowedset) > 1:
+            if len(elem.allowedset) > 1 and elem is not self:
                 elem.allowedset.discard(tuple(self.allowedset)[0])
                 if len(elem.allowedset) == 1:
                     elem.updateneighbours()
 
         for elem in self.square:
-            if len(elem.allowedset) > 1:
+            if len(elem.allowedset) > 1 and elem is not self:
                 elem.allowedset.discard(tuple(self.allowedset)[0])
                 if len(elem.allowedset) == 1:
                     elem.updateneighbours()
 
     def reducenode(self):
+        initialfix = len(self.allowedset)
         for elem in self.row:
             if len(elem.allowedset) == 1 and elem is not self and len(self.allowedset)>1:
                 self.allowedset.discard(tuple(elem.allowedset)[0])
@@ -400,7 +440,7 @@ class Node(object):
             remainset = set(range(1,10)).difference(othersunion)
             if len(remainset) == 1: self.allowedset = remainset
             if len(self.allowedset)==1: self.updateneighbours()
-
+        return len(self.allowedset) < initialfix
 
 def reduceall(sudokuObject):
     reducedsomething = True
@@ -412,19 +452,23 @@ def reduceall(sudokuObject):
     if sudokuObject.checksolved():
         return sudokuObject
     elif sudokuObject.checkfilled():
-        print("inside checkfilled",sudokuObject.get_list_as_string())
+        #print("inside checkfilled",sudokuObject.get_list_as_string())
         return None
     else:
-        print("in blank")
+        #print("in blank")
         for i in range(len(sudokuObject.nodes)):
             if len(sudokuObject.nodes[i].allowedset) ==0:
                 #print("sudokuObject.nodes[i].allowedset",sudokuObject.nodes[i].allowedset,"i = ",i)
-                print("sudokuObject.get_list_as_string() =",sudokuObject.get_list_as_string())
+                #print("sudokuObject.get_list_as_string() =",sudokuObject.get_list_as_string())
                 return None
 
-        print("inside random")
+        #print("inside random")
+        #sudokuObject.shownodeslist()
         minnode = sudokuObject.getmin_unfillednode()
-        print(minnode.allowedset)
+        #minnode.showrowlists()
+        #minnode.showcollists()
+        #minnode.showsqlists()
+        #print(minnode.allowedset)
         if len(minnode.allowedset) == 0:
             return None
         permutor = set()
@@ -439,7 +483,7 @@ def reduceall(sudokuObject):
             newsudokuObject = sudokuObject.__deepcopy__()
             solvediteration = reduceall(newsudokuObject)
             if solvediteration is not None:
-                print("returning solved iteration")
+                #print("returning solved iteration")
                 return solvediteration
         return None
 
@@ -496,10 +540,10 @@ if __name__ == "__main__":
             sudokupuzzles.append(line.strip())
     puzzleno = 1
     for puzzle in sudokupuzzles:
-        #run_sudokusolver(puzzle)
-        print(run_sudokusolver(puzzle))
+        run_sudokusolver(puzzle)
+        #print(run_sudokusolver(puzzle))
         puzzleno +=1
-        if puzzleno ==5: break
+        #if puzzleno ==5: break
 
     print("time taken = ",time.time()-starttime)
     print("build time taken = ",buildtime)
