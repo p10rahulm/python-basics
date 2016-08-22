@@ -44,6 +44,29 @@ def sumofTwoBetweenusingdict(inputList,fromTarget,toTarget,distinct = False):
     return targetnum
 
 
+def sum2betweenwith2lists(poslist,neglist,upperbound,lowerbound,lenpos,lenneg):
+    posptr = 0
+    negptr = 0
+    negiter = 0
+    target = set()
+    while posptr < lenpos and negptr < lenneg:
+        sumtwo = poslist[posptr] + neglist[negptr]
+        if sumtwo > upperbound:
+            posptr +=1
+            continue
+        if sumtwo < lowerbound:
+            negptr +=1
+            continue
+        iterator = 0
+        while poslist[posptr] + neglist[negptr +iterator] <= upperbound:
+            target.add(poslist[posptr] + neglist[negptr +iterator])
+            iterator +=1
+        posptr +=1
+    return target
+
+
+
+
 def sumTwoBetweenwithPosNegLists(poslist,neglist,upperbound,lowerbound):
     posptr = 0
     negptr = 0
@@ -85,14 +108,22 @@ if __name__ == "__main__":
     inputList = openNumberstoListfromFile("data/sortedmillion_numbers.txt")
     posnum = [i for i in inputList if i >= 0][::-1]
     negnum = [i for i in inputList if i < 0]
-    betweentuples = sumTwoBetweenwithPosNegLists(posnum,negnum,10000,-10000)
-    print(betweentuples[:10])
-    res = set()
-    for elem in betweentuples:
-        res.add(elem[0])
-    print(res)
-    print("length of res = ",len(res))
-    print("time taken = ",time.time() - timestart)
+    lenpos = len(posnum)
+    lenneg = len(negnum)
+    timefunc= time.time()
+    print(len(sum2betweenwith2lists(posnum,negnum,10000,-10000,lenpos,lenneg)))
+    print("time taken = ",time.time()-timefunc)
+    print("total time taken = ",time.time()-timestart)
+
+    # timestart - time.time()
+    # betweentuples = sumTwoBetweenwithPosNegLists(posnum,negnum,10000,-10000)
+    # print(betweentuples[:10])
+    # res = set()
+    # for elem in betweentuples:
+    #     res.add(elem[0])
+    # #print(res)
+    # print("length of res = ",len(res))
+    # print("time taken = ",time.time() - timestart)
     # writelisttofile("data/sortedmillion_numberspositive.txt",list(posnum))
     # writelisttofile("data/sortedmillion_numbersnegative.txt",list(negnum))
 
