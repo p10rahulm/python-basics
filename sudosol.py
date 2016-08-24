@@ -768,30 +768,30 @@ def run_sudokusolver(input_string):
 
 if __name__ == "__main__":
     starttime = time.time()
-    # numsudokuobjects = 0
-    # input_string = '.94...13..............76..2.8..1.....32.........2...6.....5.4.......8..7..63.4..8'
-    # print(run_sudokusolver(input_string))
-    # print("number of sudoku objects created = ", numsudokuobjects)
-    #
-    # numsudokuobjects = 0
-    # input_string = '29416735831548962767825349145631287998357421672169853456294178383972614514783596.'
-    # print(run_sudokusolver(input_string))
-    # print("number of sudoku objects created = ", numsudokuobjects)
-    #
-    # numsudokuobjects = 0
-    # input_string = '...16...831..896..67....49.45..12..9983.7..167..698..456....78383..26145.....596.'
-    # print(run_sudokusolver(input_string))
-    # print("number of sudoku objects created = ", numsudokuobjects)
+    numsudokuobjects = 0
+    input_string = '.94...13..............76..2.8..1.....32.........2...6.....5.4.......8..7..63.4..8'
+    print(run_sudokusolver(input_string))
+    print("number of sudoku objects created = ", numsudokuobjects)
+
+    numsudokuobjects = 0
+    input_string = '29416735831548962767825349145631287998357421672169853456294178383972614514783596.'
+    print(run_sudokusolver(input_string))
+    print("number of sudoku objects created = ", numsudokuobjects)
+
+    numsudokuobjects = 0
+    input_string = '...16...831..896..67....49.45..12..9983.7..167..698..456....78383..26145.....596.'
+    print(run_sudokusolver(input_string))
+    print("number of sudoku objects created = ", numsudokuobjects)
 
     numsudokuobjects = 0
     input_string = '48.3............71.2.......7.5....6....2..8.............1.76...3.....4......5....'
     print(run_sudokusolver(input_string))
     print("number of sudoku objects created = ", numsudokuobjects)
-    #
-    # numsudokuobjects = 0
-    # input_string = '....14....3....2...7..........9...3.6.1.............8.2.....1.4....5.6.....7.8...'
-    # print(run_sudokusolver(input_string))
-    # print("number of sudoku objects created = ", numsudokuobjects)
+
+    numsudokuobjects = 0
+    input_string = '....14....3....2...7..........9...3.6.1.............8.2.....1.4....5.6.....7.8...'
+    print(run_sudokusolver(input_string))
+    print("number of sudoku objects created = ", numsudokuobjects)
 
     print("time taken = ", time.time() - starttime)
     #
