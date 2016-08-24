@@ -258,13 +258,16 @@ class RCS(object):
         return g
 
     def reversenldict(self):
-        g = defaultdict(list)
+        g = defaultdict(set)
         for i in self.numbertolocation:
             nodeset = self.numbertolocation[i]
-            print(nodeset)
-            g[frozenset(nodeset)].append(i)
+            h = set()
+            for node in nodeset:h.add(node.id)
+            # print(nodeset)
+            g[frozenset(h)].add(i)
         # print("")
         # for i in g:        print("g[",i,"]= ",g[i] )
+        # sys.exit()
         return g
 
     def rcsnumtodictinitilize(self):
@@ -337,11 +340,16 @@ class RCS(object):
         for nodeset in reversedict:
             if len(nodeset) == len(reversedict[nodeset]):
                 for node in nodeset:
-                    (reducednode,reducedtoval) = node.setSet(set(reversedict[nodeset]))
+                    (reducednode,reducedtoval) = self.mainsquare.nodes[node].setSet(reversedict[nodeset])
                     reduced = reduced or reducednode
+                # self.shownldict()
                 for node in self.nodesleft:
-                    if node not in nodeset:
-                        (reducednode,reducedtoval) = node.reduceSet(set(reversedict[nodeset]))
+                    if node.id not in nodeset:
+                        # m = []
+                        # for node1 in nodeset: m.append(node1)
+                        # print("node.id = ",node.id,"set(reversedict[nodeset]) = ",set(reversedict[nodeset]),"nodeset = ",m, "node not in nodeset",node not in nodeset,
+                        #       "\nnode = ",node,"\nnodeset = ",nodeset,"\nnode[45] = ",self.mainsquare.nodes[45])
+                        (reducednode,reducedtoval) = node.reduceSet(reversedict[nodeset])
                         reduced = reduced or reducednode
         return reduced
 
@@ -497,11 +505,10 @@ class Node(object):
         else: return (self.length < startlen,False)
 
     def updatercsdictvalset(self,value):
-        nonvalset = set(range(1,10))
-        nonvalset.discard(value)
         for obj in (self.row,self.col,self.square):
-            for key in nonvalset:
-                obj.numbertolocation[key].discard(self)
+            for num in range(1,10):
+                if num != value:
+                    obj.numbertolocation[num].discard(self)
             # self.col.numbertolocation[key].discard(self)
             # self.square.numbertolocation[key].discard(self)
             obj.numbertolocation[value] = set([self])
@@ -512,6 +519,7 @@ class Node(object):
 
 
     def setValue(self,value):
+        startlen = self.length
         self.updatercsdictvalset(value)
         self.allowedset = set([value])
         self.length = 1
@@ -531,6 +539,8 @@ class Node(object):
         self.row.isfixed()
         self.col.isfixed()
         self.square.isfixed()
+        return (self.length <startlen,True)
+
 
     def lennowone(self):
         self.fixed = True
@@ -556,9 +566,10 @@ class Node(object):
         startlen = self.length
         startfixed = self.fixed
         if not startfixed:
-            self.row.numbertolocation[reduceelement].discard(self)
-            self.col.numbertolocation[reduceelement].discard(self)
-            self.square.numbertolocation[reduceelement].discard(self)
+            for obj in (self.row,self.col,self.square):
+                obj.numbertolocation[reduceelement].discard(self)
+            # self.col.numbertolocation[reduceelement].discard(self)
+            # self.square.numbertolocation[reduceelement].discard(self)
             #print("self.allowedset",self.allowedset,"reduceelement",reduceelement)
             self.allowedset.discard(reduceelement)#self.allowedset = self.allowedset.discard(reduceelement)
             #print("self.allowedset2",self.allowedset)
@@ -577,13 +588,14 @@ class Node(object):
                     # self.col.numbertolocation[reduceelem].discard(self)
                     # self.square.numbertolocation[reduceelem].discard(self)
             startlen = self.length
-            # if len(self.allowedset) ==0:                print("OMGodse SERIOUS ISSUE. self.allowedset")
+            if len(self.allowedset) ==0:                print("OMGodse SERIOUS ISSUE. self.allowedset")
             newset = self.allowedset.difference(reduceset)
-            # if len(newset) ==0:                print("OMG SERIOUS ISSUE",self.allowedset,reduceset)
+            if len(newset) ==0:                print("OMG SERIOUS ISSUE",self.allowedset,reduceset)
             self.allowedset = self.allowedset.difference(reduceset)
             self.length = len(self.allowedset)
             if self.length == 0:
-                # print("SERIOUS PROBLEM. ALLOWEDSET = ",self.allowedset,"REduceset = ",reduceset)
+                print("SERIOUS PROBLEM. ALLOWEDSET = ",self.allowedset,"REduceset = ",reduceset)
+                sys.exit()
                 self.mainsquare.unsolvable=True
                 return (True,True)
             if self.length == 1:
