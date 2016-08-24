@@ -326,10 +326,10 @@ class RCS(object):
                 # if these possible elements equal length of subset, then we can eliminate those from all other unfilled elements in the row
                 if len(elemset) == subsetlentocheck:
                     for notsubsetelem in self.nodesleft.difference(subset):
-                        for i in subset:print("subset.allowedset = ",i.allowedset)
-                        print("calling from reduce subsets. Subset=",subset,"elemset = ",elemset,"subsetlentocheck","notsubsetelem",notsubsetelem,"and",notsubsetelem.allowedset)
-                        print(self.showrcs())
-                        self.shownldict()
+                        # for i in subset:print("subset.allowedset = ",i.allowedset)
+                        # print("calling from reduce subsets. Subset=",subset,"elemset = ",elemset,"subsetlentocheck","notsubsetelem",notsubsetelem,"and",notsubsetelem.allowedset)
+                        # print(self.showrcs())
+                        # self.shownldict()
                         (reducedsizeforElem, reducedtoval) = notsubsetelem.reduceSet(elemset)
                         if reducedtoval: return True
                         reduced = reduced or reducedsizeforElem
@@ -374,7 +374,7 @@ class RCS(object):
                 # self.shownldict()
                 for node in self.nodesleft:
                     if node.id not in nodeset:
-                        print("last in reduce bipartite")
+                        # print("last in reduce bipartite")
                         # m = []
                         # for node1 in nodeset: m.append(node1)
                         # print("node.id = ",node.id,"set(reversedict[nodeset]) = ",set(reversedict[nodeset]),"nodeset = ",m, "node not in nodeset",node not in nodeset,
