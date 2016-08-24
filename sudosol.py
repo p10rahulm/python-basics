@@ -1,6 +1,8 @@
 from math import sqrt
 from itertools import combinations
 import time
+from queue import Queue
+from collections import defaultdict
 import sys
 
 buildtime = 0
@@ -9,16 +11,19 @@ reducenodetime = 0
 rcsbuildtime = 0
 nodebuildtime = 0
 deepcopytime = 0
-
+rbipartitetime =0
 numsudokuobjects = 0
+globaliter = 0
 
 
 class Sudoku(object):
     def __init__(self, input_list):
+        starttime = time.time()
         self.input_list = input_list
         self.build_matrix(self.input_list)
         self.reducedtovaluelastloop = True
         self.unsolvable = False
+
 
     def getmin_unfillednode(self):
         minnode = None
@@ -29,6 +34,19 @@ class Sudoku(object):
                 lenmin = node.length
                 minnode = node
         return minnode
+
+    def getOrderedMinnodesUnfilled(self):
+        minnodes = []
+        lenmin = 10
+        for node in self.nodesleft:
+            if node.length == lenmin:
+                minnodes.append(node)
+            elif node.length < lenmin:
+                lenmin = node.length
+                del minnodes[:]
+        return minnodes
+
+
 
     def shownodeslist(self,filename=None):
         mylist = []
@@ -50,19 +68,24 @@ class Sudoku(object):
         if solved:
             for col in self.cols:
                 if not col.isfixed():
+                    # print("col is not fixed",)
+                    # for elem in col: print(elem.allowedset,)
                     solved = False
                     break
         if solved:
             for square in self.squares:
                 if not square.isfixed():
+                    # print("square is not fixed",)
                     solved = False
                     break
         self.solved = solved
         # print(self.solved)
         return self.solved
 
-    def checkfilled(self):
+    def badresponse(self):
         # print("in checkfilled")
+        if self.unsolvable: return True
+        # print("in badresopnse")
         solved = True
         for elem in self.nodes:
             #print("elem = ",elem,"len(elem)=",len(elem.allowedset),"elem")
@@ -95,8 +118,13 @@ class Sudoku(object):
         # self.shownodeslist("data/sudokulog.txt")
         if self.reducenodesimple(): return True
         if self.reducenodecomplex(): return True
-        if self.reducercs():  # reduce rows columns and squares
-            return True
+        # print("returning false in reduceloop")
+        # sys.exit()
+        if self.reducercs():  return True # reduce rows columns and squares
+        if self.reducebipartitercs():            return True
+        # print("returning false in reducebipartitercs")
+        # sys.exit()
+
         return False
 
     def reducenodesimple(self):
@@ -121,6 +149,20 @@ class Sudoku(object):
                 if square.reduce_subsets(): return True
         return False
 
+    def reducebipartitercs(self):
+        reduced = False
+        for row in self.rows:
+            if not row.fixed:
+                reduced = reduced or row.reducebipartite() #:                    return True
+        for col in self.cols:
+            if not col.fixed:
+                reduced = reduced or col.reducebipartite() #if col.reducebipartite(): return True
+        for square in self.squares:
+            if not square.fixed:
+                reduced = reduced or square.reducebipartite() #if square.reducebipartite(): return True
+        return reduced
+
+
     def __deepcopy__(self):
         result = Sudoku(self.get_list())
         for i in range(81):
@@ -128,10 +170,10 @@ class Sudoku(object):
             result.nodes[i].value = self.nodes[i].value
             result.nodes[i].fixed = self.nodes[i].fixed
             result.nodes[i].length = self.nodes[i].length
-        for i in range(9):
-            result.rows[i].fixed = self.rows[i].fixed
-            result.cols[i].fixed = self.cols[i].fixed
-            result.squares[i].fixed = self.squares[i].fixed
+        for tups in ((result.rows,self.rows),(result.cols,self.cols),(result.squares,self.squares)):
+            for i in range(9):
+                tups[0][i].fixed = tups[1][i].fixed
+                tups[0][i].numbertolocation = tups[1][i].numbertolocation.copy()
 
         return result
 
@@ -158,12 +200,12 @@ class Sudoku(object):
         for i in range(81):
             looptime = time.time()
             if input_matrix[i] is not None:
-                newnode = Node(self.rows[i // 9], self.cols[i % 9], self.squares[((i // 27) * 3) + ((i % 9) // 3)],self,set([input_matrix[i]]),True,input_matrix[i],1)
+                newnode = Node(self.rows[i // 9], self.cols[i % 9], self.squares[((i // 27) * 3) + ((i % 9) // 3)],self,set([input_matrix[i]]),True,input_matrix[i],1,i)
                 newnode.row.unsolved -= 1
                 newnode.col.unsolved -= 1
                 newnode.square.unsolved -= 1
             else:
-                newnode = Node(self.rows[i // 9], self.cols[i % 9], self.squares[((i // 27) * 3) + ((i % 9) // 3)],self,set(range(1,10)),False,None,9)
+                newnode = Node(self.rows[i // 9], self.cols[i % 9], self.squares[((i // 27) * 3) + ((i % 9) // 3)],self,set(range(1,10)),False,None,9,i)
                 self.nodesleft.append(newnode)
                 newnode.row.nodesleft.add(newnode)
                 newnode.col.nodesleft.add(newnode)
@@ -175,16 +217,69 @@ class Sudoku(object):
             self.cols[i % 9].append(newnode)
             self.squares[((i // 27) * 3) + ((i % 9) // 3)].append(newnode)
             rcsbuildtime += time.time() - inlooptime
+        for i in range(9):
+            self.rows[i].rcsnumtodictinitilize()
+            self.cols[i].rcsnumtodictinitilize()
+            self.squares[i].rcsnumtodictinitilize()
+
+        for i in range(81):
+            if input_matrix[i] is not None:
+                self.rows[i//9].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
+                self.cols[i%9].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
+                self.squares[((i // 27) * 3) + ((i % 9) // 3)].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
+        # self.rows[0].shownldict()
+        # sys.exit()
         nodebuildtime += time.time() - looptime
         buildtime += time.time() - buildtimest
+
+    def solutiondriverNoGuess(self):
+        self.runreduceLoop()
+        if self.checksolved():
+            return self
+        elif self.badresponse():
+            return "Bad Response"
+        return None
 
 
 class RCS(object):
     def __init__(self):
         self.nodesleft = set()
         self.fixed = False
+        self.numbertolocation = defaultdict(set)
+
+    def shownldict(self):
+        g = defaultdict(list)
+        for i in self.numbertolocation:
+            for node in self.numbertolocation[i]:
+                g[i].append(node.id)
+        # print(g)
+        for i in g:        print("g[",i,"]= ",g[i] )
+        # for i in g: print("g[",i,"]= ",self.numbertolocation[i])
+        return g
+
+    def reversenldict(self):
+        g = defaultdict(list)
+        for i in self.numbertolocation:
+            nodeset = self.numbertolocation[i]
+            print(nodeset)
+            g[frozenset(nodeset)].append(i)
+        # print("")
+        # for i in g:        print("g[",i,"]= ",g[i] )
+        return g
+
+    def rcsnumtodictinitilize(self):
+        for i in range(1,10):
+            for node in self:
+                self.numbertolocation[i].add(node)
+
+    def showrcs(self):
+        res = []
+        for i in self: res += i.allowedset
+        return str(res)
+
 
     def isfixed(self):
+        # print("in isfixed. self.unsolved",self.unsolved,"self.",self.showrcs())
         if not self.fixed:
             if self.unsolved !=0: return False
             else:
@@ -207,6 +302,10 @@ class RCS(object):
             for subset in combinations(nodesleftcopy, subsetlentocheck):
                 # get all possible elements in combination subset
                 elemset = set([])
+                subsetinvalid = False
+                for node in subset:
+                    if node not in self.nodesleft: subsetinvalid = subsetinvalid or True
+                if subsetinvalid: continue
                 for node in subset:                    elemset = elemset.union(node.allowedset)
                 # if these possible elements equal length of subset, then we can eliminate those from all other unfilled elements in the row
                 if len(elemset) == subsetlentocheck:
@@ -219,6 +318,136 @@ class RCS(object):
             subsetlentocheck += 1
         return reduced
 
+    def updatercsneighbours(self):
+        for num in self.numbertolocation:
+            if len(self.numbertolocation[num]) ==1:
+                for num2 in self.numbertolocation:
+                    if num2 != num:
+                        try:
+                            self.numbertolocation[num2].remove(tuple(self.numbertolocation[num])[0])
+                            for node in self.numbertolocation[num2].copy():
+                                node.reduceElem(num2)
+                        except ValueError:
+                            pass
+
+
+
+
+
+    def reducebipartite(self):
+        reduced = False
+        reversedict = self.reversenldict()
+        if reversedict is None:
+            print("reversedict IS NONE")
+            sys.exit()
+
+
+        for nodeset in reversedict:
+            if len(nodeset) == len(reversedict[nodeset]):
+                for node in nodeset:
+                    (reducednode,reducedtoval) = node.setSet(set(reversedict[nodeset]))
+                    reduced = reduced or reducednode
+                for node in self.nodesleft:
+                    if node not in nodeset:
+                        (reducednode,reducedtoval) = node.reduceSet(set(reversedict[nodeset]))
+                        reduced = reduced or reducednode
+        return reduced
+
+
+        # self.updatercsneighbours()
+        print("")
+        self.shownldict()
+        # print(self.numbertolocation[5])
+        reduced = False
+        permutationtonodedict =defaultdict(set)
+        if not self.fixed:
+            for num in self.numbertolocation:
+                nodesfornumset = frozenset(self.numbertolocation[num])
+                permutationtonodedict[nodesfornumset].add(num)
+            for nodesfornumset in permutationtonodedict:
+                if len(nodesfornumset) == len(permutationtonodedict[nodesfornumset]) and len(nodesfornumset)>1:
+                    for node in nodesfornumset:
+                        if not node.fixed:
+                            (reducednode,reducedtoval) = node.setSet(permutationtonodedict[nodesfornumset].copy())
+                            reduced = reduced or reducednode
+                    for node in  self.nodesleft.difference(nodesfornumset):
+                        (reducednode,reducedtoval) = node.reduceSet(permutationtonodedict[nodesfornumset].copy())
+                        reduced = reduced or reducednode
+        if reduced:
+            self.shownldict()
+            self.reversenldict()
+            sys.exit()
+        return reduced
+
+
+    #
+    # def reducebipartite(self):
+    #     global rbipartitetime
+    #     starttime = time.time()
+    #     reduced = False
+    #     permutationtonodedict =defaultdict(set)
+    #     if not self.fixed:
+    #         m = defaultdict(list)
+    #         # print("m=",self.numbertolocation)
+    #         for num in self.numbertolocation:
+    #             # print("num",num,"self.numbertolocation[num]",self.numbertolocation[num])
+    #             for i in self.numbertolocation[num]:
+    #                 m[num].append(i.allowedset)
+    #         print("num = ",num,"self.numbertolocation[num] = ",m)
+    #         global globaliter
+    #         globaliter+=1
+    #         # if globaliter ==8:            sys.exit()
+    #         for num in self.numbertolocation:
+    #             nodesfornumset = frozenset(self.numbertolocation[num])
+    #             permutationtonodedict[nodesfornumset].add(num)
+    #
+    #         for permutation in permutationtonodedict:
+    #             if len(permutation) == len(permutationtonodedict[permutation]) and len(permutation)>1:
+    #                 self.iter+=1
+    #                 m = []
+    #                 for i in permutation: m.append(i.allowedset)
+    #                 print("m = ", m,"permutationtonodedict[permutation] = ",permutationtonodedict)
+    #                 sys.exit()
+    #                 for node in permutation:
+    #                     if not node.fixed:
+    #                         (reducednode,reducedtoval) = node.setSet(permutationtonodedict[permutation].copy())
+    #                         reduced = reduced or reducednode
+    #                 for node in  self.nodesleft.difference(permutation):
+    #                     (reducednode,reducedtoval) = node.reduceSet(permutationtonodedict[permutation].copy())
+    #                     reduced = reduced or reducednode
+    #     if reduced: print("reduced in reducedbipartite")
+    #     return reduced
+
+
+        # # print("in reducebipartite")
+        # subsetlentocheck = 1
+        # numstocheck = set()
+        # reduced = False
+        # for i in self.nodesleft:
+        #     numstocheck = numstocheck.union(i.allowedset)
+        #     # print("node.availableset",i.allowedset)
+        # while subsetlentocheck < len(numstocheck):
+        #     for subsettuple in combinations(numstocheck, subsetlentocheck):
+        #         subset = set(subsettuple)
+        #         elemset = set()
+        #         for num in subset:
+        #             elemset = elemset.union(self.numbertolocation[num])
+        #         if len(elemset) == subsetlentocheck:
+        #             for elem in elemset:
+        #                 (reducedsizeforElem, reducedtoval) = elem.setSet(subset)
+        #                 if reducedtoval:
+        #                     print("reducedtoval. elemset",elemset,"elem = ",elem,"subset = ",subset)
+        #                     rbipartitetime += time.time()-starttime
+        #                     return True
+        #                 reduced = reduced or reducedsizeforElem
+        #     subsetlentocheck +=1
+        # # print("returned, rresult = ", reduced)
+        # rbipartitetime += time.time()-starttime
+        # return reduced
+
+
+
+
 
 class Row(list, RCS):
     def __init__(self,mainsquare):
@@ -226,6 +455,9 @@ class Row(list, RCS):
         self.nodesleft = set()
         self.unsolved = 9
         self.mainsquare = mainsquare
+        self.numbertolocation = defaultdict(set)
+
+
 
 
 class Col(list, RCS):
@@ -234,6 +466,7 @@ class Col(list, RCS):
         self.nodesleft = set()
         self.unsolved = 9
         self.mainsquare = mainsquare
+        self.numbertolocation = defaultdict(set)
 
 
 class Square(list, RCS):
@@ -242,10 +475,11 @@ class Square(list, RCS):
         self.nodesleft = set()
         self.unsolved = 9
         self.mainsquare = mainsquare
+        self.numbertolocation = defaultdict(set)
 
 
 class Node(object):
-    def __init__(self, row, col, square,mainsquare,allowedset,fixed,value,length):
+    def __init__(self, row, col, square,mainsquare,allowedset,fixed,value,length,id):
         self.row = row
         self.col = col
         self.square = square
@@ -254,21 +488,46 @@ class Node(object):
         self.fixed = fixed
         self.value = value
         self.length = length
+        self.id = id
+
+    def setSet(self,setofnums):
+        if self.fixed or self.length < len(setofnums): return (False,False)
+        for num in range(1,10):
+            if num not in setofnums:
+                self.row.numbertolocation[num].discard(self)
+                self.col.numbertolocation[num].discard(self)
+                self.square.numbertolocation[num].discard(self)
+        startlen = self.length
+        self.allowedset  = setofnums.copy()
+        self.length = len(self.allowedset)
+        if self.length ==1:
+            return self.lennowone()
+        else: return (self.length < startlen,False)
+
+    def updatercsdictvalset(self,value):
+        nonvalset = set(range(1,10))
+        nonvalset.discard(value)
+        for obj in (self.row,self.col,self.square):
+            for key in nonvalset:
+                obj.numbertolocation[key].discard(self)
+            # self.col.numbertolocation[key].discard(self)
+            # self.square.numbertolocation[key].discard(self)
+            obj.numbertolocation[value] = set([self])
+        # self.col.numbertolocation[value] = set([self])
+        # self.square.numbertolocation[value] = set([self])
+
+
 
 
     def setValue(self,value):
-        startfixed = self.fixed
-        if startfixed:
-            self.allowedset = set([value])
-            self.value = value
-        else:
-            self.allowedset = set([value])
-            self.length = 1
-            self.fixed = True
-            self.value = value
-            self.row.unsolved -=1
-            self.col.unsolved -=1
-            self.square.unsolved -=1
+        self.updatercsdictvalset(value)
+        self.allowedset = set([value])
+        self.length = 1
+        self.fixed = True
+        self.value = value
+        self.row.unsolved -=1
+        self.col.unsolved -=1
+        self.square.unsolved -=1
         self.row.nodesleft.discard(self)
         self.col.nodesleft.discard(self)
         self.square.nodesleft.discard(self)
@@ -276,42 +535,55 @@ class Node(object):
             self.mainsquare.nodesleft.remove(self)
         except ValueError:
             pass  # do nothing!
-        #self.updateneighbours()
+        self.updateneighbours()
         self.row.isfixed()
         self.col.isfixed()
         self.square.isfixed()
+
+    def lennowone(self):
+        self.fixed = True
+        self.value = tuple(self.allowedset)[0]
+        self.updatercsdictvalset(self.value)
+        self.row.nodesleft.discard(self)
+        self.col.nodesleft.discard(self)
+        self.square.nodesleft.discard(self)
+        try:
+            self.mainsquare.nodesleft.remove(self)
+        except ValueError:
+            pass  # do nothing!
+        self.updateneighbours()
+        self.row.unsolved -=1
+        self.row.isfixed()
+        self.col.unsolved -=1
+        self.col.isfixed()
+        self.square.unsolved -=1
+        self.square.isfixed()
+        return (True, True)
 
     def reduceElem(self, reduceelement):
         startlen = self.length
         startfixed = self.fixed
         if not startfixed:
+            self.row.numbertolocation[reduceelement].discard(self)
+            self.col.numbertolocation[reduceelement].discard(self)
+            self.square.numbertolocation[reduceelement].discard(self)
             #print("self.allowedset",self.allowedset,"reduceelement",reduceelement)
             self.allowedset.discard(reduceelement)#self.allowedset = self.allowedset.discard(reduceelement)
             #print("self.allowedset2",self.allowedset)
             self.length = len(self.allowedset)
-            # if self.length == 0:
-            #     print("ELEMENT SERIOUS PROBLEM. ALLOWEDSET = ",self.allowedset,"REduceset = ",reduceelement)
-            #     sys.exit()
             if self.length == 1:
-                self.fixed = True
-                self.value = tuple(self.allowedset)[0]
-                self.row.nodesleft.discard(self)
-                self.col.nodesleft.discard(self)
-                self.square.nodesleft.discard(self)
-                self.mainsquare.nodesleft.remove(self)
-                self.updateneighbours()
-                self.row.unsolved -=1
-                self.row.isfixed()
-                self.col.unsolved -=1
-                self.col.isfixed()
-                self.square.unsolved -=1
-                self.square.isfixed()
-                return (True, True)
+                return self.lennowone()
+
         return (self.length - startlen > 0, False)
 
     def reduceSet(self, reduceset):
         startfixed = self.fixed
         if not startfixed:
+            for obj in (self.row,self.col,self.square):
+                for reduceelem in reduceset:
+                    obj.numbertolocation[reduceelem].discard(self)
+                    # self.col.numbertolocation[reduceelem].discard(self)
+                    # self.square.numbertolocation[reduceelem].discard(self)
             startlen = self.length
             # if len(self.allowedset) ==0:                print("OMGodse SERIOUS ISSUE. self.allowedset")
             newset = self.allowedset.difference(reduceset)
@@ -321,21 +593,9 @@ class Node(object):
             if self.length == 0:
                 # print("SERIOUS PROBLEM. ALLOWEDSET = ",self.allowedset,"REduceset = ",reduceset)
                 self.mainsquare.unsolvable=True
+                return (True,True)
             if self.length == 1:
-                self.fixed = True
-                self.value = tuple(self.allowedset)[0]
-                self.row.nodesleft.discard(self)
-                self.col.nodesleft.discard(self)
-                self.square.nodesleft.discard(self)
-                self.mainsquare.nodesleft.remove(self)
-                self.updateneighbours()
-                self.row.unsolved -=1
-                self.row.isfixed()
-                self.col.unsolved -=1
-                self.col.isfixed()
-                self.square.unsolved -=1
-                self.square.isfixed()
-                return (True, True)
+                return self.lennowone()
         else:
             return (False, False)
         return (self.length < startlen, False)
@@ -389,159 +649,169 @@ class Node(object):
                 setofelems.add(rcselem.value)
         return self.reduceSet(setofelems)[0]
 
+    def reducecomplexgivenrcs(self,rcs):
+        # print("in reduce complex, rcs = ",rcs)
+        if self.fixed: return False
+        for num in rcs.numbertolocation:
+            if len(rcs.numbertolocation[num]) ==1:
+                valset = rcs.numbertolocation[num]
+                node = tuple(valset)[0]
+                if node.fixed: continue
+                node.setValue(num)
+                # self.updateneighbours()
+                return True
+        return False
+
+        # setofelems = set()
+        # for rcselem in rcs:
+        #     if rcselem is not self: setofelems = setofelems.union(rcselem.allowedset)
+        # if len(setofelems) == 8:
+        #     reductionset = set(range(1,10)).difference(setofelems)
+        #     self.setValue(tuple(reductionset)[0])
+        #     self.updateneighbours()
+        #     return True
+        # return False
+
     def reducecomplex(self):
         if self.fixed: return False
-        setofelems = set()
-        for rcselem in self.row:
-            if rcselem is not self: setofelems = setofelems.union(rcselem.allowedset)
-        if len(setofelems) == 8:
-            reductionset = set(range(1,10)).difference(setofelems)
-            self.setValue(tuple(reductionset)[0])
-            self.updateneighbours()
-            return True
-        else: (reducedforrow,reducedtoval) = (False,False)
-        setofelems = set()
-        for rcselem in self.row:
-            if rcselem is not self: setofelems = setofelems.union(rcselem.allowedset)
-        if len(setofelems) == 8:
-            reductionset = set(range(1,10)).difference(setofelems)
-            self.setValue(tuple(reductionset)[0])
-            self.updateneighbours()
-            return True
-        else: (reducedforcol,reducedtoval) = (False,False)
-        setofelems = set()
-        for rcselem in self.row:
-            if rcselem is not self: setofelems = setofelems.union(rcselem.allowedset)
-        if len(setofelems) == 8:
-            reductionset = set(range(1,10)).difference(setofelems)
-            self.setValue(tuple(reductionset)[0])
-            self.updateneighbours()
-            return True
-        else: (reducedforsquare,reducedtoval) = (False,False)
-        return reducedforrow or reducedforcol or reducedforsquare or reducedtoval
+        if self.reducecomplexgivenrcs(self.row): return True
+        # print("returning false in reducecomplex row")
+        # sys.exit()
+        if self.reducecomplexgivenrcs(self.col): return True
+        if self.reducecomplexgivenrcs(self.square): return True
+        # print("returning false in reducecomplex")
+        # sys.exit()
+        return False
 
-def reduceall(sudokuObject):
-    reducedsomething = True
-    looptime = time.time()
-    sudokuObject.runreduceLoop()
-    global reducenodetime
-    reducenodetime += time.time() - looptime
-    # print("inside reduceall")
-    # while reducedsomething:
-    #     #print("running reduce loop")
-    #     reducedsomething = sudokuObject.run_reduce_loop()
-    # print("out of while")
-    if sudokuObject.checksolved():
-        return sudokuObject
-    elif sudokuObject.checkfilled():
-        # print("inside checkfilled",sudokuObject.get_list_as_string())
-        return None
+def dfsreduceall(sudokuObject):
+    response = sudokuObject.solutiondriverNoGuess()
+    if response == "Bad Response":        return None
+    elif type(response) is Sudoku: return response
     else:
-        # print("in blank")
-        # sudokuObject.shownodeslist()
-        # for i in range(len(sudokuObject.nodes)):
-        #     if len(sudokuObject.nodes[i].allowedset) == 0:
-        #         # print("sudokuObject.nodes[i].allowedset",sudokuObject.nodes[i].allowedset,"i = ",i)
-        #         # print("sudokuObject.get_list_as_string() =",sudokuObject.get_list_as_string())
-        #         return None
-
-        # print("inside random")
-        # sudokuObject.shownodeslist()
         minnode = sudokuObject.getmin_unfillednode()
-        # minnode.showrowlists()
-        # minnode.showcollists()
-        # minnode.showsqlists()
-        # print("minnode.allowedset",minnode.allowedset)
         if len(minnode.allowedset) == 0:
             return None
         permutor = set()
         for i in minnode.allowedset: permutor.add(i)
         for permuted in permutor:
-            # print("in permuted part",minnode,"permuted = ",permuted)
             global numsudokuobjects
             numsudokuobjects += 1
-            # print(minnode.allowedset)
-            minnode.setValue(permuted)
-            # print("after setvalue")
-            # print("minnode.allowedset",minnode.allowedset)
+            # minnode.setValue(permuted)
             global deepcopytime
             looptime = time.time()
             newsudokuObject = sudokuObject.__deepcopy__()
+            newsudokuObject.nodes[minnode.id].setValue(permuted)
             deepcopytime += time.time() - looptime
-            solvediteration = reduceall(newsudokuObject)
+            solvediteration = dfsreduceall(newsudokuObject)
             if solvediteration is not None:
-                # print("returning solved iteration")
                 return solvediteration
         return None
+
+def bfsreduceall(sudokuObject):
+
+    source = sudokuObject.solutiondriverNoGuess()
+    if source == "Bad Response":        return None
+    elif type(source) is Sudoku: return source
+
+    Q = Queue([sudokuObject])
+    loop = 1
+    startminnodes = None
+    while not Q.isempty():
+        # print("loop no",loop)
+        if loop >2: return dfsreduceall(sudokuObject)
+        # if startminnodes is not None:
+        #     for node in startminnodes:print(node.allowedset,node.id)
+        # print("Q.unqueue()",Q)
+        v = Q.unqueue()
+        unfnodes = v.getOrderedMinnodesUnfilled() #unfinished nodes
+        if loop ==1:startminnodes = unfnodes
+        for minnode in unfnodes:
+            for permutedvalue in minnode.allowedset:
+                global numsudokuobjects
+                numsudokuobjects += 1
+                newsudokuObject = sudokuObject.__deepcopy__()
+                newsudokuObject.nodes[minnode.id].setValue(permutedvalue)
+                postsolveobject = newsudokuObject.solutiondriverNoGuess()
+                if type(postsolveobject) is Sudoku: return postsolveobject
+                elif postsolveobject != "Bad Response": Q.enqueue(newsudokuObject)
+                loop +=1
+
+    return None
+
 
 
 def run_sudokusolver(input_string):
     input_list = []
     sudoobj = None
+    specification = 0
     for char in input_string:
-        input_list.append(int(char)) if char != '.' else input_list.append(None)
+        if char != '.':
+            input_list.append(int(char))
+            specification +=1
+        else: input_list.append(None)
+    print("specification of puzzle = ",specification)
     sudoobj = Sudoku(input_list)
-    sudoobj = reduceall(sudoobj)
+    sudoobj = dfsreduceall(sudoobj)
+    # sudoobj = bfsreduceall(sudoobj)
     if sudoobj is not None:
         solvedstring = sudoobj.get_list_as_string()
     else:
         print("FAILURE")
+        # sys.exit()
         solvedstring = "Unable to solve puzzle"
     return solvedstring
 
 
 if __name__ == "__main__":
-    global numsudokuobjects
-
-
     starttime = time.time()
-    numsudokuobjects = 0
-    input_string = '.94...13..............76..2.8..1.....32.........2...6.....5.4.......8..7..63.4..8'
-    print(run_sudokusolver(input_string))
-    print("number of sudoku objects created = ", numsudokuobjects)
-
-    numsudokuobjects = 0
-    input_string = '294167358315489627678253491456312879983574216721698534562941783839726145147835962'
-    print(run_sudokusolver(input_string))
-    print("number of sudoku objects created = ", numsudokuobjects)
-
-    numsudokuobjects = 0
-    input_string = '...16...831..896..67....49.45..12..9983.7..167..698..456....78383..26145.....596.'
-    print(run_sudokusolver(input_string))
-    print("number of sudoku objects created = ", numsudokuobjects)
+    # numsudokuobjects = 0
+    # input_string = '.94...13..............76..2.8..1.....32.........2...6.....5.4.......8..7..63.4..8'
+    # print(run_sudokusolver(input_string))
+    # print("number of sudoku objects created = ", numsudokuobjects)
+    #
+    # numsudokuobjects = 0
+    # input_string = '29416735831548962767825349145631287998357421672169853456294178383972614514783596.'
+    # print(run_sudokusolver(input_string))
+    # print("number of sudoku objects created = ", numsudokuobjects)
+    #
+    # numsudokuobjects = 0
+    # input_string = '...16...831..896..67....49.45..12..9983.7..167..698..456....78383..26145.....596.'
+    # print(run_sudokusolver(input_string))
+    # print("number of sudoku objects created = ", numsudokuobjects)
 
     numsudokuobjects = 0
     input_string = '48.3............71.2.......7.5....6....2..8.............1.76...3.....4......5....'
     print(run_sudokusolver(input_string))
     print("number of sudoku objects created = ", numsudokuobjects)
-
-    numsudokuobjects = 0
-    input_string = '....14....3....2...7..........9...3.6.1.............8.2.....1.4....5.6.....7.8...'
-    print(run_sudokusolver(input_string))
-    print("number of sudoku objects created = ", numsudokuobjects)
-
-    print("time taken = ", time.time() - starttime)
-
-    numsudokuobjects = 0
-    # starttime = time.time()
-    toughsudokufile = filename = 'data/toughsudokupuzzles.txt'
-    sudokupuzzles = []
-    with open(toughsudokufile) as inputfile:
-        for line in inputfile:
-            sudokupuzzles.append(line.strip())
-    puzzleno = 1
-    for puzzle in sudokupuzzles:
-        run_sudokusolver(puzzle)
-        # print(run_sudokusolver(puzzle))
-        puzzleno += 1
-        # if puzzleno ==6: break
+    #
+    # numsudokuobjects = 0
+    # input_string = '....14....3....2...7..........9...3.6.1.............8.2.....1.4....5.6.....7.8...'
+    # print(run_sudokusolver(input_string))
+    # print("number of sudoku objects created = ", numsudokuobjects)
 
     print("time taken = ", time.time() - starttime)
-    print("build time taken = ", buildtime)
-    print("rcs buildtime = ", rcsbuildtime)
-    print("node buildtime = ", nodebuildtime)
-    print("reduce rcs time taken = ", reducercstime)
-    print("reduce node time taken = ", reducenodetime)
-    print("deepcopytime= ", deepcopytime)
-    print("number of sudoku objects created = ", numsudokuobjects)
+    #
+    # numsudokuobjects = 0
+    # # starttime = time.time()
+    # toughsudokufile = filename = 'data/toughsudokupuzzles.txt'
+    # sudokupuzzles = []
+    # with open(toughsudokufile) as inputfile:
+    #     for line in inputfile:
+    #         sudokupuzzles.append(line.strip())
+    # puzzleno = 1
+    # for puzzle in sudokupuzzles:
+    #     run_sudokusolver(puzzle)
+    #     # print(run_sudokusolver(puzzle))
+    #     puzzleno += 1
+    #     # if puzzleno ==5: break
+    #
+    # print("time taken = ", time.time() - starttime)
+    # print("build time taken = ", buildtime)
+    # print("rcs buildtime = ", rcsbuildtime)
+    # print("node buildtime = ", nodebuildtime)
+    # print("reduce rcs time taken = ", reducercstime)
+    # print("reduce node time taken = ", reducenodetime)
+    # print("deepcopytime= ", deepcopytime)
+    # print("time spent inside bipartite= ", rbipartitetime)
+    # print("number of sudoku objects created = ", numsudokuobjects)
 
