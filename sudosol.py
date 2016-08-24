@@ -337,11 +337,6 @@ class RCS(object):
     def reducebipartite(self):
         reduced = False
         reversedict = self.reversenldict()
-        if reversedict is None:
-            print("reversedict IS NONE")
-            sys.exit()
-
-
         for nodeset in reversedict:
             if len(nodeset) == len(reversedict[nodeset]):
                 for node in nodeset:
@@ -354,30 +349,30 @@ class RCS(object):
         return reduced
 
 
-        # self.updatercsneighbours()
-        print("")
-        self.shownldict()
-        # print(self.numbertolocation[5])
-        reduced = False
-        permutationtonodedict =defaultdict(set)
-        if not self.fixed:
-            for num in self.numbertolocation:
-                nodesfornumset = frozenset(self.numbertolocation[num])
-                permutationtonodedict[nodesfornumset].add(num)
-            for nodesfornumset in permutationtonodedict:
-                if len(nodesfornumset) == len(permutationtonodedict[nodesfornumset]) and len(nodesfornumset)>1:
-                    for node in nodesfornumset:
-                        if not node.fixed:
-                            (reducednode,reducedtoval) = node.setSet(permutationtonodedict[nodesfornumset].copy())
-                            reduced = reduced or reducednode
-                    for node in  self.nodesleft.difference(nodesfornumset):
-                        (reducednode,reducedtoval) = node.reduceSet(permutationtonodedict[nodesfornumset].copy())
-                        reduced = reduced or reducednode
-        if reduced:
-            self.shownldict()
-            self.reversenldict()
-            sys.exit()
-        return reduced
+        # # self.updatercsneighbours()
+        # print("")
+        # self.shownldict()
+        # # print(self.numbertolocation[5])
+        # reduced = False
+        # permutationtonodedict =defaultdict(set)
+        # if not self.fixed:
+        #     for num in self.numbertolocation:
+        #         nodesfornumset = frozenset(self.numbertolocation[num])
+        #         permutationtonodedict[nodesfornumset].add(num)
+        #     for nodesfornumset in permutationtonodedict:
+        #         if len(nodesfornumset) == len(permutationtonodedict[nodesfornumset]) and len(nodesfornumset)>1:
+        #             for node in nodesfornumset:
+        #                 if not node.fixed:
+        #                     (reducednode,reducedtoval) = node.setSet(permutationtonodedict[nodesfornumset].copy())
+        #                     reduced = reduced or reducednode
+        #             for node in  self.nodesleft.difference(nodesfornumset):
+        #                 (reducednode,reducedtoval) = node.reduceSet(permutationtonodedict[nodesfornumset].copy())
+        #                 reduced = reduced or reducednode
+        # if reduced:
+        #     self.shownldict()
+        #     self.reversenldict()
+        #     sys.exit()
+        # return reduced
 
 
     #
