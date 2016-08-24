@@ -242,7 +242,6 @@ class Sudoku(object):
             self.rows[i].rcsnumtodictinitilize()
             self.cols[i].rcsnumtodictinitilize()
             self.squares[i].rcsnumtodictinitilize()
-
         for i in range(81):
             if input_matrix[i] is not None:
                 self.rows[rowno].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
