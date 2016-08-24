@@ -331,9 +331,6 @@ class RCS(object):
                             pass
 
 
-
-
-
     def reducebipartite(self):
         reduced = False
         reversedict = self.reversenldict()
