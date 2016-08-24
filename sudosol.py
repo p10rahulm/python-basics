@@ -215,14 +215,17 @@ class Sudoku(object):
         looptime = time.time()
         for i in range(81):
             looptime = time.time()
+            rowno = i//9
+            colno = 1%9
+            squareno = ((i // 27) * 3) + ((i % 9) // 3)
             if input_matrix[i] is not None:
-                newnode = Node(self.rows[i // 9], self.cols[i % 9], self.squares[((i // 27) * 3) + ((i % 9) // 3)],
+                newnode = Node(self.rows[rowno], self.cols[colno], self.squares[squareno],
                                self, set([input_matrix[i]]), True, input_matrix[i], 1, i)
                 newnode.row.unsolved -= 1
                 newnode.col.unsolved -= 1
                 newnode.square.unsolved -= 1
             else:
-                newnode = Node(self.rows[i // 9], self.cols[i % 9], self.squares[((i // 27) * 3) + ((i % 9) // 3)],
+                newnode = Node(self.rows[rowno], self.cols[colno], self.squares[squareno],
                                self, set(range(1, 10)), False, None, 9, i)
                 self.nodesleft.append(newnode)
                 newnode.row.nodesleft.add(newnode)
@@ -231,9 +234,9 @@ class Sudoku(object):
             nodebuildtime += time.time() - looptime
             self.nodes.append(newnode)
             inlooptime = time.time()
-            self.rows[i // 9].append(newnode)
-            self.cols[i % 9].append(newnode)
-            self.squares[((i // 27) * 3) + ((i % 9) // 3)].append(newnode)
+            self.rows[rowno].append(newnode)
+            self.cols[colno].append(newnode)
+            self.squares[squareno].append(newnode)
             rcsbuildtime += time.time() - inlooptime
         for i in range(9):
             self.rows[i].rcsnumtodictinitilize()
@@ -242,9 +245,9 @@ class Sudoku(object):
 
         for i in range(81):
             if input_matrix[i] is not None:
-                self.rows[i // 9].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
-                self.cols[i % 9].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
-                self.squares[((i // 27) * 3) + ((i % 9) // 3)].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
+                self.rows[rowno].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
+                self.cols[colno].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
+                self.squares[squareno].numbertolocation[input_matrix[i]] = set([self.nodes[i]])
         # self.rows[0].shownldict()
         # sys.exit()
         nodebuildtime += time.time() - looptime
