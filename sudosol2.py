@@ -1,5 +1,8 @@
 ##FROM PETER NORVIG
 
+
+numobjects = 0
+
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     return [a+b for a in A for b in B]
@@ -7,7 +10,7 @@ def cross(A, B):
 digits   = '123456789'
 rows     = 'ABCDEFGHI'
 cols     = digits
-squares  = cross(rows, cols)
+squares  =   cross(rows, cols)
 unitlist = ([cross(rows, c) for c in cols] +
             [cross(r, cols) for r in rows] +
             [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')])
@@ -110,6 +113,8 @@ def search(values):
         return values ## Solved!
     ## Chose the unfilled square s with the fewest possibilities
     n,s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
+    global numobjects
+    numobjects +=1
     return some(search(assign(values.copy(), s, d))
 		for d in values[s])
 
@@ -182,3 +187,4 @@ if __name__ == '__main__':
     # solve_all(from_file("hardest.txt"), "hardest", None)
     solve_all(from_file("data/toughsudokupuzzles.txt"), "hardest", None)
     solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
+    print("tot obj = ",numobjects)
