@@ -89,8 +89,7 @@ def display(values):
     width = 1+max(len(values[s]) for s in squares)
     line = '+'.join(['-'*(width*3)]*3)
     for r in rows:
-        print( ''.join(values[r+c].center(width)+('|' if c in '36' else ''))
-                      for c in cols)
+        print( [''.join(values[r+c].center(width)+('|' if c in '36' else ''))                      for c in cols])
         if r in 'CF': print( line)
     print()
 
@@ -181,10 +180,11 @@ grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2...
 hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
 
 if __name__ == '__main__':
+    starttime = time.time()
+    input_string = '48.3............71.2.......7.5....6....2..8.............1.76...3.....4......5....'
+    display(solve(input_string))
+    print("time taken = ",time.time()-starttime)
     test()
-    # solve_all(from_file("easy50.txt", '========'), "easy", None)
-    # solve_all(from_file("top95.txt"), "hard", None)
-    # solve_all(from_file("hardest.txt"), "hardest", None)
     solve_all(from_file("data/toughsudokupuzzles.txt"), "hardest", None)
     solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
     print("tot obj = ",numobjects)

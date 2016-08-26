@@ -12,6 +12,15 @@ def twopowers(x):
         i <<= 1
     return powers
 
+def whichtwopower(x):
+    count = 0
+    while x>0:
+        x >>= 1
+        count+=1
+    return count-1
+
+
+
 def is_power2(num):
     # states if a number is a power of two
     return ((num & (num - 1)) == 0) and num != 0
@@ -33,7 +42,7 @@ peers = dict((s, set(sum(units[s],[]))-set([s]))                 for s in square
 
 #len of binary using table lookup O(1)
 onestable = [bin(i)[2:].count('1') for i in range(512)]
-
+twopowerplusone = [whichtwopower(i)+1 for i in range(512)]
 
 def parse_grid(grid):
     """Convert grid to a dict of possible values, {square: digits}, or
@@ -41,7 +50,7 @@ def parse_grid(grid):
     ## To start, every square can be any digit; then assign values from the grid.
     values = dict((s, bindigits) for s in squares)
     for s,d in grid_values(grid).items():
-        if d in digits and not assign(values, s, 2**int(d)):
+        if d in digits and not assign(values, s, 2**(int(d)-1)):
             return False ## (Fail if we can't assign d to square s.)
     return values
 
@@ -73,22 +82,40 @@ def eliminate(values, s, d):
     elif onestable[values[s]] == 1:
         d2 = values[s]
         if not all(eliminate(values, s2, d2) for s2 in peers[s]):
+            # print("returned false at eliminate peers")
             return False
     ## (2) If a unit u is reduced to only one place for a value d, then put it there.
+    for u in units[s]:
+        dplaces = [[(s,tupower) for s in u if tupower & values[s] != 0] for tupower in twopowers(d)]
+        if len(dplaces) == 0:
+            return False ## Contradiction: no place for this value
+        elif len(dplaces) == 1:
+            # d can only be in one place in unit; assign it there
+            if not assign(values, dplaces[0], tupower):
+                return False
 
-    for tupower in twopowers(d):
-        for u in units[s]:
-            dplaces = [s for s in u if tupower & values[s] != 0]
-            if len(dplaces) == 0:
-                return False ## Contradiction: no place for this value
-            elif len(dplaces) == 1:
-                # d can only be in one place in unit; assign it there
-                if not assign(values, dplaces[0], tupower):
-                    return False
+    # for tupower in twopowers(d):
+    #     for u in units[s]:
+    #         dplaces = [s for s in u if tupower & values[s] != 0]
+    #         #dplaces = [[(s,tupower) for s in u if tupower & values[s] != 0] for tupower in twopowers(d)]
+    #         if len(dplaces) == 0:
+    #             return False ## Contradiction: no place for this value
+    #         elif len(dplaces) == 1:
+    #             # d can only be in one place in unit; assign it there
+    #             if not assign(values, dplaces[0], tupower):
+    #                 return False
     return values
 
 def solve(grid):
-    return search(parse_grid(grid))
+    return parsedict2val(search(parse_grid(grid)))
+
+def parsedict2val(input_dict):
+    if not input_dict: return input_dict
+    for i in input_dict:
+        input_dict[i] = str(twopowerplusone[input_dict[i]])
+    return input_dict
+
+
 
 def search(values):
     global numobjects
@@ -121,8 +148,7 @@ def display(values):
     width = 1+max(len(values[s]) for s in squares)
     line = '+'.join(['-'*(width*3)]*3)
     for r in rows:
-        print( ''.join(values[r+c].center(width)+('|' if c in '36' else ''))
-                      for c in cols)
+        print([''.join(values[r+c].center(width)+('|' if c in '36' else ''))                      for c in cols])
         if r in 'CF': print( line)
     print()
 
@@ -168,13 +194,13 @@ def random_puzzle(N=17):
     """Make a random puzzle with N or more assignments. Restart on contradictions.
     Note the resulting puzzle is not guaranteed to be solvable, but empirically
     about 99.8% of them are solvable. Some have multiple solutions."""
-    values = dict((s, digits) for s in squares)
+    values = dict((s, bindigits) for s in squares)
     for s in shuffled(squares):
-        if not assign(values, s, random.choice(values[s])):
+        if not assign(values, s, random.choice(twopowers(values[s]))):
             break
-        ds = [values[s] for s in squares if len(values[s]) == 1]
+        ds = [values[s] for s in squares if is_power2(values[s])]
         if len(ds) >= N and len(set(ds)) >= 8:
-            return ''.join(values[s] if len(values[s])==1 else '.' for s in squares)
+            return ''.join(str(twopowerplusone(values[s])) if is_power2(values[s]) else '.' for s in squares)
     return random_puzzle(N) ## Give up and make a new puzzle
 
 def shuffled(seq):
@@ -188,10 +214,10 @@ def shuffled(seq):
 if __name__ == "__main__":
     starttiem = time.time()
     input_string = '48.3............71.2.......7.5....6....2..8.............1.76...3.....4......5....'
-    for i in range(10):
-        solve(input_string)
+    for i in range(1):
+        display(solve(input_string))
     print("timetaken = ",time.time()-starttiem)
     print("num objects created = ",numobjects)
-    solve_all(from_file("data/toughsudokupuzzles.txt"), "hardest", None)
+    solve_all(from_file("data/toughsudokupuzzles.txt"), "hardest", 1)
     solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
     print("tot obj = ",numobjects)
