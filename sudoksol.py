@@ -86,12 +86,11 @@ def eliminate(values, s, d):
             return False
     ## (2) If a unit u is reduced to only one place for a value d, then put it there.
     for u in units[s]:
-        dplaces = [[(s,tupower) for s in u if tupower & values[s] != 0] for tupower in twopowers(d)]
-        if len(dplaces) == 0:
+        dplaces = [(tupower,[s for s in u if tupower & values[s] != 0]) for tupower in twopowers(d)]
+        if any(len(place[1]) == 0 for place in dplaces):
             return False ## Contradiction: no place for this value
-        elif len(dplaces) == 1:
+        if not all(assign(values, place[1][0], place[0]) for place in dplaces if len(place[1]) ==1):
             # d can only be in one place in unit; assign it there
-            if not assign(values, dplaces[0], tupower):
                 return False
 
     # for tupower in twopowers(d):
@@ -200,7 +199,7 @@ def random_puzzle(N=17):
             break
         ds = [values[s] for s in squares if is_power2(values[s])]
         if len(ds) >= N and len(set(ds)) >= 8:
-            return ''.join(str(twopowerplusone(values[s])) if is_power2(values[s]) else '.' for s in squares)
+            return ''.join(str(twopowerplusone[values[s]]) if is_power2(values[s]) else '.' for s in squares)
     return random_puzzle(N) ## Give up and make a new puzzle
 
 def shuffled(seq):
