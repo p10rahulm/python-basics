@@ -91,7 +91,7 @@ def display(values):
     width = 1+max(len(values[s]) for s in squares)
     line = '+'.join(['-'*(width*3)]*3)
     for r in rows:
-        print( [''.join(values[r+c].center(width)+('|' if c in '36' else ''))                      for c in cols])
+        print( ''.join([values[r+c].center(width)+('|' if c in '36' else '')                      for c in cols]))
         if r in 'CF': print( line)
     print()
 
@@ -138,7 +138,7 @@ def solve_all(grids, name='', showif=0.0):
     times, results = zip(*[time_solve(grid) for grid in grids])
     N = len(grids)
     if N > 1:
-        print( "Solved %d of %d %s puzzles (avg %.2f secs (%d Hz), max %.2f secs)." % (
+        print( "Solved %d of %d %s puzzles (avg %.3f secs (%d Hz), max %.3f secs)." % (
             sum(results), N, name, sum(times)/N, N/sum(times), max(times)))
 
 def solved(values):
