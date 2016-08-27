@@ -49,6 +49,7 @@ def grid_values(grid):
     chars = [c for c in grid if c in digits or c in '0.']
     assert len(chars) == 81
     return dict(zip(squares, chars))
+
 def assign(values, s, d):
     """Eliminate all the other values (except d) from values[s] and propagate.
     Return values, except return False if a contradiction is detected."""
@@ -57,6 +58,7 @@ def assign(values, s, d):
         return values
     else:
         return False
+
 
 def eliminate(values, s, d):
     """Eliminate d from values[s]; propagate when values or places <= 2.
@@ -93,14 +95,6 @@ def display(values):
         if r in 'CF': print( line)
     print()
 
-def assign(values, s, d):
-    """Eliminate all the other values (except d) from values[s] and propagate.
-    Return values, except return False if a contradiction is detected."""
-    other_values = values[s].replace(d, '')
-    if all(eliminate(values, s, d2) for d2 in other_values):
-        return values
-    else:
-        return False
 
 def solve(grid): return search(parse_grid(grid))
 
