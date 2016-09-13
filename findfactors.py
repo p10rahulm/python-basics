@@ -1,5 +1,6 @@
 from math import sqrt
 def factors(n):
+    if n==0:return [0]
     f1 = lambda x: x
     f2 = lambda x: n//x
     step = 2 if n%2 else 1
