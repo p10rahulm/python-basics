@@ -70,7 +70,8 @@ if __name__ == "__main__":
     imlist = ["Circle","Square","Rectangle","Triangle"]
     for i in range(200):
         result = createimages(permutedlist4s,imlist)
-        result.save("data/img/Output1616/out"+str(i)+".bmp")
+        result.thumbnail((300,300))
+        result.save("data/img/Output1616/out"+str(i)+".png")
 
 
 
